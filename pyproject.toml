@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yaml-diff-tool"
+version = "1.0.0"
+description = "Compare Taqasta values.yml with Canasta recommended revisions"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.31.0",
+    "pyyaml>=6.0",
+    "deepdiff>=6.7.1",
+]
+authors = [
+    {name = "YAML Diff Tool"},
+]
+
+[project.scripts]
+yaml-diff-tool = "src.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
