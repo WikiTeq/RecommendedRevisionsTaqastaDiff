@@ -62,6 +62,87 @@ class TestYamlComparer:
         assert comparer._clean_diff_path("field") == "field"
         assert comparer._clean_diff_path("some_field") == "some_field"
 
+    def test_normalize_repo_url(self, comparer):
+        """Test the _normalize_repo_url method."""
+        # Test removing .git suffix
+        assert comparer._normalize_repo_url("https://github.com/user/repo.git") == "https://github.com/user/repo"
+        assert comparer._normalize_repo_url("https://github.com/user/repo") == "https://github.com/user/repo"
+        
+        # Test removing trailing slash
+        assert comparer._normalize_repo_url("https://github.com/user/repo/") == "https://github.com/user/repo"
+        assert comparer._normalize_repo_url("https://github.com/user/repo.git/") == "https://github.com/user/repo"
+        
+        # Test empty/None URLs
+        assert comparer._normalize_repo_url("") == ""
+        assert comparer._normalize_repo_url(None) == None
+
+    def test_repos_are_equivalent(self, comparer):
+        """Test the _repos_are_equivalent method."""
+        # Test equivalent URLs (with/without .git)
+        assert comparer._repos_are_equivalent(
+            "https://github.com/user/repo.git",
+            "https://github.com/user/repo"
+        ) == True
+        
+        # Test equivalent URLs (with/without trailing slash)
+        assert comparer._repos_are_equivalent(
+            "https://github.com/user/repo/",
+            "https://github.com/user/repo"
+        ) == True
+        
+        # Test equivalent URLs (both with .git and slash)
+        assert comparer._repos_are_equivalent(
+            "https://github.com/user/repo.git/",
+            "https://github.com/user/repo"
+        ) == True
+        
+        # Test different repositories
+        assert comparer._repos_are_equivalent(
+            "https://github.com/user/repo1",
+            "https://github.com/user/repo2"
+        ) == False
+        
+        # Test None/empty URLs
+        assert comparer._repos_are_equivalent(None, None) == True
+        assert comparer._repos_are_equivalent("", "") == True
+        assert comparer._repos_are_equivalent(None, "") == True
+        assert comparer._repos_are_equivalent("https://github.com/user/repo", None) == False
+
+    def test_compare_extensions_equivalent_repos(self, comparer):
+        """Test that equivalent repository URLs don't show as differences."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "repository": "https://github.com/user/repo.git"}}],
+            "repositories": [{"url": "https://github.com/user/repo.git"}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "repository": "https://github.com/user/repo"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        # Should not show repository differences since they're equivalent
+        assert "Taqasta repo:" not in result
+        assert "Canasta repo:" not in result
+        assert "Custom repositories only in" not in result
+        assert "No differences found!" in result
+
+    def test_compare_extensions_different_repos(self, comparer):
+        """Test that different repository URLs do show as differences."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "repository": "https://github.com/user/repo1"}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "repository": "https://github.com/user/repo2"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        # Should show repository differences since they're different
+        assert "Taqasta repo: https://github.com/user/repo1" in result
+        assert "Canasta repo: https://github.com/user/repo2" in result
+
     def test_compare_extensions_only_in_taqasta(self, comparer):
         """Test extensions present only in Taqasta."""
         taqasta = {

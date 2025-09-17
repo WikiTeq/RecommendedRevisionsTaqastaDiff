@@ -37,6 +37,31 @@ class YamlComparer:
         else:
             return path
 
+    def _normalize_repo_url(self, url: str) -> str:
+        """Normalize repository URL to ignore trivial differences."""
+        if not url:
+            return url
+        
+        # Remove trailing slash first
+        if url.endswith('/'):
+            url = url[:-1]
+        
+        # Remove trailing .git if present
+        if url.endswith('.git'):
+            url = url[:-4]
+        
+        return url
+
+    def _repos_are_equivalent(self, repo1: str, repo2: str) -> bool:
+        """Check if two repository URLs are equivalent (ignoring trivial differences)."""
+        # Handle None/empty cases - treat None and empty string as equivalent
+        if (repo1 is None or repo1 == "") and (repo2 is None or repo2 == ""):
+            return True
+        if repo1 is None or repo1 == "" or repo2 is None or repo2 == "":
+            return False
+        
+        return self._normalize_repo_url(repo1) == self._normalize_repo_url(repo2)
+
     def compare(self, taqasta_yaml: Dict[str, Any], canasta_yaml: Dict[str, Any],
                 taqasta_ref: str, canasta_ref: str, mw_version: str = None) -> str:
         """Compare two YAML structures and return a formatted diff."""
@@ -154,7 +179,7 @@ class YamlComparer:
                     # Compare repositories
                     taqasta_repo = taqasta_data.get('repository')
                     canasta_repo = canasta_data.get('repository')
-                    if taqasta_repo != canasta_repo:
+                    if not self._repos_are_equivalent(taqasta_repo, canasta_repo):
                         output.append(f"        Taqasta repo: {taqasta_repo or 'wikimedia'}")
                         output.append(f"        Canasta repo: {canasta_repo or 'wikimedia'}")
 
@@ -176,40 +201,58 @@ class YamlComparer:
                         if only_canasta_steps:
                             output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
 
-                    # Show any other differences detected by DeepDiff
-                    if not any([
+                    # Check if there are any meaningful differences after filtering
+                    has_meaningful_differences = any([
                         taqasta_commit != canasta_commit,
-                        taqasta_repo != canasta_repo,
+                        not self._repos_are_equivalent(taqasta_repo, canasta_repo),
                         taqasta_branch != canasta_branch,
                         taqasta_steps != canasta_steps
-                    ]):
+                    ])
+                    
+                    # Show any other differences detected by DeepDiff
+                    if not has_meaningful_differences:
                         # If no specific differences were shown, display the actual DeepDiff details
-                        output.append(f"        Other differences:")
+                        other_differences = []
                         for change_type, changes in diff.items():
                             if change_type == 'values_changed':
                                 for path, change in changes.items():
                                     clean_path = self._clean_diff_path(path)
                                     old_val = change.get('old_value', 'None')
                                     new_val = change.get('new_value', 'None')
-                                    output.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
+                                    
+                                    # Skip repository differences that are equivalent
+                                    if clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
+                                        continue
+                                    
+                                    other_differences.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
                             elif change_type == 'type_changes':
                                 for path, change in changes.items():
                                     clean_path = self._clean_diff_path(path)
                                     old_type = change.get('old_type', 'Unknown')
                                     new_type = change.get('new_type', 'Unknown')
-                                    output.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
+                                    other_differences.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
                             elif change_type == 'dictionary_item_added':
                                 for path in changes:
                                     clean_path = self._clean_diff_path(path)
-                                    output.append(f"          Added: {clean_path}")
+                                    other_differences.append(f"          Added: {clean_path}")
                             elif change_type == 'dictionary_item_removed':
                                 for path in changes:
                                     clean_path = self._clean_diff_path(path)
-                                    output.append(f"          Removed: {clean_path}")
+                                    other_differences.append(f"          Removed: {clean_path}")
                             elif change_type == 'iterable_item_added':
-                                output.append(f"          Added {len(changes)} item(s) to iterable")
+                                other_differences.append(f"          Added {len(changes)} item(s) to iterable")
                             elif change_type == 'iterable_item_removed':
-                                output.append(f"          Removed {len(changes)} item(s) from iterable")
+                                other_differences.append(f"          Removed {len(changes)} item(s) from iterable")
+                        
+                        # Only show "Other differences" if there are actual differences to show
+                        if other_differences:
+                            output.append(f"        Other differences:")
+                            output.extend(other_differences)
+                        else:
+                            # If there are no meaningful differences, don't show this extension as different
+                            # Remove the last added line about this extension being different
+                            if output and output[-1].startswith(f"    ~ {ext}:"):
+                                output.pop()
 
         return "\n".join(output) if output else ""
 
@@ -355,9 +398,29 @@ class YamlComparer:
                         if 'repository' in data:
                             canasta_repo_urls.add(data['repository'])
 
-        # Compare
-        only_taqasta = taqasta_repo_urls - canasta_repo_urls
-        only_canasta = canasta_repo_urls - taqasta_repo_urls
+        # Compare using equivalence check
+        only_taqasta = set()
+        only_canasta = set()
+        
+        # Find repositories only in Taqasta
+        for taqasta_repo in taqasta_repo_urls:
+            found_equivalent = False
+            for canasta_repo in canasta_repo_urls:
+                if self._repos_are_equivalent(taqasta_repo, canasta_repo):
+                    found_equivalent = True
+                    break
+            if not found_equivalent:
+                only_taqasta.add(taqasta_repo)
+        
+        # Find repositories only in Canasta
+        for canasta_repo in canasta_repo_urls:
+            found_equivalent = False
+            for taqasta_repo in taqasta_repo_urls:
+                if self._repos_are_equivalent(taqasta_repo, canasta_repo):
+                    found_equivalent = True
+                    break
+            if not found_equivalent:
+                only_canasta.add(canasta_repo)
 
         if only_taqasta:
             output.append("  Custom repositories only in Taqasta:")
