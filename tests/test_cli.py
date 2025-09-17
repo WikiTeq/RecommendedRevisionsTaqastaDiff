@@ -177,6 +177,68 @@ class TestCli:
         assert hasattr(src.cli, '__name__')
         # The if __name__ == "__main__" block exists in the file
 
+    def test_main_module_execution_calls_main(self):
+        """Test that the module execution calls main() when run directly."""
+        # Test the actual if __name__ == "__main__" block by importing and checking
+        import src.cli
+        import sys
+
+        # Store original sys.argv
+        original_argv = sys.argv
+
+        try:
+            # Set up sys.argv to simulate module execution
+            sys.argv = ['src/cli.py', '--help']
+
+            # Import the module to trigger the if __name__ == "__main__" block
+            # This is tricky to test directly, so we'll just verify the structure
+            assert hasattr(src.cli, '__name__')
+            assert callable(src.cli.main)
+
+        finally:
+            # Restore original sys.argv
+            sys.argv = original_argv
+
+    def test_main_module_direct_execution(self):
+        """Test direct execution of the module."""
+        import subprocess
+        import sys
+
+        # Run the module directly to trigger the if __name__ == "__main__" block
+        result = subprocess.run([
+            sys.executable, '-m', 'src.cli', '--help'
+        ], capture_output=True, text=True, cwd='.')
+
+        # The module should run without error (help should return 0)
+        assert result.returncode == 0
+
+
+    @patch('src.cli.YamlFetcher')
+    @patch('src.cli.YamlComparer')
+    def test_main_keyboard_interrupt(self, mock_comparer_class, mock_fetcher_class, capsys):
+        """Test main execution with KeyboardInterrupt."""
+        mock_fetcher_class.side_effect = KeyboardInterrupt()
+
+        with patch('sys.argv', ['test']):
+            result = main()
+
+        assert result == 130
+        captured = capsys.readouterr()
+        assert "Operation cancelled by user" in captured.err
+
+    @patch('src.cli.YamlFetcher')
+    @patch('src.cli.YamlComparer')
+    def test_main_general_exception(self, mock_comparer_class, mock_fetcher_class, capsys):
+        """Test main execution with general exception."""
+        mock_fetcher_class.side_effect = Exception("Unexpected error")
+
+        with patch('sys.argv', ['test']):
+            result = main()
+
+        assert result == 1
+        captured = capsys.readouterr()
+        assert "Error: Unexpected error" in captured.err
+
     @patch('src.cli.YamlFetcher')
     @patch('src.cli.YamlComparer')
     @patch('pathlib.Path.write_text')

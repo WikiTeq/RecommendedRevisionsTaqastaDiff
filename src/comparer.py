@@ -145,6 +145,37 @@ class YamlComparer:
                         if only_canasta_steps:
                             output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
 
+                    # Show any other differences detected by DeepDiff
+                    if not any([
+                        taqasta_commit != canasta_commit,
+                        taqasta_repo != canasta_repo,
+                        taqasta_branch != canasta_branch,
+                        taqasta_steps != canasta_steps
+                    ]):
+                        # If no specific differences were shown, display the actual DeepDiff details
+                        output.append(f"        Other differences:")
+                        for change_type, changes in diff.items():
+                            if change_type == 'values_changed':
+                                for path, change in changes.items():
+                                    old_val = change.get('old_value', 'None')
+                                    new_val = change.get('new_value', 'None')
+                                    output.append(f"          {path}: '{old_val}' → '{new_val}'")
+                            elif change_type == 'type_changes':
+                                for path, change in changes.items():
+                                    old_type = change.get('old_type', 'Unknown')
+                                    new_type = change.get('new_type', 'Unknown')
+                                    output.append(f"          {path}: type changed from {old_type} to {new_type}")
+                            elif change_type == 'dictionary_item_added':
+                                for path in changes:
+                                    output.append(f"          Added: {path}")
+                            elif change_type == 'dictionary_item_removed':
+                                for path in changes:
+                                    output.append(f"          Removed: {path}")
+                            elif change_type == 'iterable_item_added':
+                                output.append(f"          Added {len(changes)} item(s) to iterable")
+                            elif change_type == 'iterable_item_removed':
+                                output.append(f"          Removed {len(changes)} item(s) from iterable")
+
         return "\n".join(output) if output else ""
 
     def _compare_skins(self, taqasta_skins: List[Dict[str, Any]],
@@ -185,17 +216,45 @@ class YamlComparer:
 
                 diff = DeepDiff(taqasta_data, canasta_data, ignore_order=True)
                 if diff:
-                    differences.append((skin, taqasta_data, canasta_data))
+                    differences.append((skin, taqasta_data, canasta_data, diff))
 
             if differences:
                 output.append("  Skins with different configurations:")
-                for skin, taqasta_data, canasta_data in differences:
+                for skin, taqasta_data, canasta_data, diff in differences:
                     output.append(f"    ~ {skin}:")
+
+                    # Compare commits
                     taqasta_commit = taqasta_data.get('commit')
                     canasta_commit = canasta_data.get('commit')
                     if taqasta_commit != canasta_commit:
                         output.append(f"        Taqasta commit: {taqasta_commit}")
                         output.append(f"        Canasta commit: {canasta_commit}")
+
+                    # Show any other differences detected by DeepDiff
+                    if taqasta_commit == canasta_commit:
+                        # If no specific differences were shown, display the actual DeepDiff details
+                        output.append(f"        Other differences:")
+                        for change_type, changes in diff.items():
+                            if change_type == 'values_changed':
+                                for path, change in changes.items():
+                                    old_val = change.get('old_value', 'None')
+                                    new_val = change.get('new_value', 'None')
+                                    output.append(f"          {path}: '{old_val}' → '{new_val}'")
+                            elif change_type == 'type_changes':
+                                for path, change in changes.items():
+                                    old_type = change.get('old_type', 'Unknown')
+                                    new_type = change.get('new_type', 'Unknown')
+                                    output.append(f"          {path}: type changed from {old_type} to {new_type}")
+                            elif change_type == 'dictionary_item_added':
+                                for path in changes:
+                                    output.append(f"          Added: {path}")
+                            elif change_type == 'dictionary_item_removed':
+                                for path in changes:
+                                    output.append(f"          Removed: {path}")
+                            elif change_type == 'iterable_item_added':
+                                output.append(f"          Added {len(changes)} item(s) to iterable")
+                            elif change_type == 'iterable_item_removed':
+                                output.append(f"          Removed {len(changes)} item(s) from iterable")
 
         return "\n".join(output) if output else ""
 

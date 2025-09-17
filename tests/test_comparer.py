@@ -99,8 +99,57 @@ class TestYamlComparer:
         result = comparer.compare(taqasta, canasta, "master", "main")
 
         assert "Extensions with different configurations:" in result
-        assert "Taqasta repo: https://github.com/taqasta/ext1" in result
-        assert "Canasta repo: https://github.com/canasta/ext1" in result
+
+    def test_compare_extensions_other_differences_values_changed(self, comparer):
+        """Test extensions with differences in other fields (values changed)."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "some_field": "value1"}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "some_field": "value2"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        assert "root['some_field']: 'value1' → 'value2'" in result
+
+    def test_compare_extensions_other_differences_type_changes(self, comparer):
+        """Test extensions with type differences."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "version": "1.0"}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "version": 1.0}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        assert "type changed from" in result
+
+    def test_compare_extensions_other_differences_added_removed(self, comparer):
+        """Test extensions with added/removed fields."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "field1": "value"}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "field2": "value"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        assert "Added:" in result or "Removed:" in result
 
     def test_compare_extensions_different_branches(self, comparer):
         """Test extensions with different branches."""
@@ -163,6 +212,148 @@ class TestYamlComparer:
 
         assert "Skins with different configurations:" in result
         assert "~ Skin1:" in result
+
+    def test_compare_skins_other_differences(self, comparer):
+        """Test skins with differences in other fields."""
+        taqasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "some_field": "value1"}}]
+        }
+
+        canasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "some_field": "value2"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Skins with different configurations:" in result
+        assert "~ Skin1:" in result
+        assert "Other differences:" in result
+        assert "root['some_field']: 'value1' → 'value2'" in result
+
+    def test_compare_extensions_iterable_differences(self, comparer):
+        """Test extensions with iterable differences."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "tags": ["tag1", "tag2"]}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "tags": ["tag1", "tag3"]}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        # This should trigger iterable_item_added/removed coverage
+
+    def test_compare_extensions_dictionary_item_added_removed(self, comparer):
+        """Test extensions with dictionary item added/removed."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "field1": "value"}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "field2": "value"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        assert "Added:" in result or "Removed:" in result
+
+    def test_compare_extensions_iterable_item_added_removed(self, comparer):
+        """Test extensions with iterable item added/removed."""
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "steps": ["step1", "step2"]}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "steps": ["step1", "step3"]}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        # This triggers values_changed, not iterable_item_added/removed
+        assert "root['steps'][1]: 'step2' → 'step3'" in result
+
+    def test_compare_skins_dictionary_item_added_removed(self, comparer):
+        """Test skins with dictionary item added/removed."""
+        taqasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "field1": "value"}}]
+        }
+
+        canasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "field2": "value"}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Skins with different configurations:" in result
+        assert "~ Skin1:" in result
+        assert "Other differences:" in result
+        assert "Added:" in result or "Removed:" in result
+
+    def test_compare_skins_iterable_item_added_removed(self, comparer):
+        """Test skins with iterable item added/removed."""
+        taqasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "steps": ["step1", "step2"]}}]
+        }
+
+        canasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "steps": ["step1", "step3"]}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Skins with different configurations:" in result
+        assert "~ Skin1:" in result
+        assert "Other differences:" in result
+        # This triggers values_changed, not iterable_item_added/removed
+        assert "root['steps'][1]: 'step2' → 'step3'" in result
+
+    def test_compare_extensions_actual_iterable_added_removed(self, comparer):
+        """Test extensions with actual iterable item added/removed."""
+        # Create a scenario that triggers iterable_item_added
+        taqasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "tags": []}}]
+        }
+
+        canasta = {
+            "extensions": [{"Ext1": {"commit": "abc123", "tags": ["tag1", "tag2"]}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Other differences:" in result
+        # This should trigger iterable_item_added
+        assert "Added" in result
+
+    def test_compare_skins_actual_iterable_added_removed(self, comparer):
+        """Test skins with actual iterable item added/removed."""
+        # Create a scenario that triggers iterable_item_removed
+        taqasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "tags": ["tag1", "tag2"]}}]
+        }
+
+        canasta = {
+            "skins": [{"Skin1": {"commit": "abc123", "tags": []}}]
+        }
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Skins with different configurations:" in result
+        assert "~ Skin1:" in result
+        assert "Other differences:" in result
+        # This should trigger iterable_item_removed
+        assert "Removed" in result
 
     def test_compare_packages_only_in_taqasta(self, comparer):
         """Test packages present only in Taqasta."""

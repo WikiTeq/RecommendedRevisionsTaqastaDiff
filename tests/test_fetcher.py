@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
+import requests
 import yaml
 
 from src.fetcher import YamlFetcher
@@ -127,6 +128,22 @@ class TestYamlFetcher:
 
         with pytest.raises(ValueError, match="Invalid YAML"):
             fetcher._load_cached_or_fetch("owner/repo", "ref", "file.yml")
+
+    @patch('src.fetcher.requests.Session.get')
+    def test_fetch_from_github_timeout(self, mock_get, fetcher):
+        """Test timeout error when fetching from GitHub."""
+        mock_get.side_effect = requests.exceptions.Timeout()
+
+        with pytest.raises(RuntimeError, match="Request timed out"):
+            fetcher._fetch_from_github("owner/repo", "main", "path/file.yml")
+
+    @patch('src.fetcher.requests.Session.get')
+    def test_fetch_from_github_request_exception(self, mock_get, fetcher):
+        """Test request exception when fetching from GitHub."""
+        mock_get.side_effect = requests.exceptions.RequestException("Connection error")
+
+        with pytest.raises(RuntimeError, match="Failed to fetch"):
+            fetcher._fetch_from_github("owner/repo", "main", "path/file.yml")
 
     @patch('src.fetcher.YamlFetcher._load_cached_or_fetch')
     def test_fetch_taqasta_values(self, mock_load, fetcher):
