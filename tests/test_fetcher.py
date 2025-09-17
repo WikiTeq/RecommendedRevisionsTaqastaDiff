@@ -126,7 +126,7 @@ class TestYamlFetcher:
         mock_response.text = "invalid: yaml: content: {"
         mock_get.return_value = mock_response
 
-        with pytest.raises(ValueError, match="Invalid YAML"):
+        with pytest.raises(ValueError, match="Parse YAML file from"):
             fetcher._load_cached_or_fetch("owner/repo", "ref", "file.yml")
 
     @patch('src.fetcher.requests.Session.get')
