@@ -213,16 +213,16 @@ class TestYamlComparer:
         assert "repository: https://github.com/example/ext1" in result
         assert "commit: abc123" in result
 
-    def test_compare_extensions_only_in_canasta(self, comparer):
+    def test_compare_extensions_only_in_canasta(self, comparer, basic_extension):
         """Test extensions present only in Canasta."""
         taqasta = {
-            "extensions": [{"Ext1": {"commit": "abc123"}}]
+            "extensions": [basic_extension("Ext1", "abc123")]
         }
 
         canasta = {
             "extensions": [
-                {"Ext1": {"commit": "abc123"}},
-                {"Ext2": {"commit": "def456", "repository": "https://github.com/example/ext2"}}
+                basic_extension("Ext1", "abc123"),
+                basic_extension("Ext2", "def456", repository="https://github.com/example/ext2")
             ]
         }
 
@@ -231,14 +231,14 @@ class TestYamlComparer:
         assert "Extensions only in Canasta:" in result
         assert "- Ext2" in result
 
-    def test_compare_extensions_different_commits(self, comparer):
+    def test_compare_extensions_different_commits(self, comparer, basic_extension):
         """Test extensions with different commits."""
         taqasta = {
-            "extensions": [{"Ext1": {"commit": "abc123"}}]
+            "extensions": [basic_extension("Ext1", "abc123")]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"commit": "def456"}}]
+            "extensions": [basic_extension("Ext1", "def456")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -248,28 +248,28 @@ class TestYamlComparer:
         assert "Taqasta commit: abc123" in result
         assert "Canasta commit: def456" in result
 
-    def test_compare_extensions_different_repositories(self, comparer):
+    def test_compare_extensions_different_repositories(self, comparer, basic_extension):
         """Test extensions with different repositories."""
         taqasta = {
-            "extensions": [{"Ext1": {"repository": "https://github.com/taqasta/ext1"}}]
+            "extensions": [basic_extension("Ext1", repository="https://github.com/taqasta/ext1")]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"repository": "https://github.com/canasta/ext1"}}]
+            "extensions": [basic_extension("Ext1", repository="https://github.com/canasta/ext1")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
 
         assert "Extensions with different configurations:" in result
 
-    def test_compare_extensions_other_differences_values_changed(self, comparer):
+    def test_compare_extensions_other_differences_values_changed(self, comparer, basic_extension):
         """Test extensions with differences in other fields (values changed)."""
         taqasta = {
-            "extensions": [{"Ext1": {"commit": "abc123", "some_field": "value1"}}]
+            "extensions": [basic_extension("Ext1", "abc123", some_field="value1")]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"commit": "abc123", "some_field": "value2"}}]
+            "extensions": [basic_extension("Ext1", "abc123", some_field="value2")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -279,14 +279,14 @@ class TestYamlComparer:
         assert "Other differences:" in result
         assert "some_field: 'value1' → 'value2'" in result
 
-    def test_compare_extensions_other_differences_type_changes(self, comparer):
+    def test_compare_extensions_other_differences_type_changes(self, comparer, basic_extension):
         """Test extensions with type differences."""
         taqasta = {
-            "extensions": [{"Ext1": {"commit": "abc123", "version": "1.0"}}]
+            "extensions": [basic_extension("Ext1", "abc123", version="1.0")]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"commit": "abc123", "version": 1.0}}]
+            "extensions": [basic_extension("Ext1", "abc123", version=1.0)]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -296,14 +296,14 @@ class TestYamlComparer:
         assert "Other differences:" in result
         assert "type changed from" in result
 
-    def test_compare_extensions_other_differences_added_removed(self, comparer):
+    def test_compare_extensions_other_differences_added_removed(self, comparer, basic_extension):
         """Test extensions with added/removed fields."""
         taqasta = {
-            "extensions": [{"Ext1": {"commit": "abc123", "field1": "value"}}]
+            "extensions": [basic_extension("Ext1", "abc123", field1="value")]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"commit": "abc123", "field2": "value"}}]
+            "extensions": [basic_extension("Ext1", "abc123", field2="value")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -313,14 +313,14 @@ class TestYamlComparer:
         assert "Other differences:" in result
         assert "Added:" in result or "Removed:" in result
 
-    def test_compare_extensions_different_branches(self, comparer):
+    def test_compare_extensions_different_branches(self, comparer, basic_extension):
         """Test extensions with different branches."""
         taqasta = {
-            "extensions": [{"Ext1": {"branch": "master"}}]
+            "extensions": [basic_extension("Ext1", branch="master")]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"branch": "develop"}}]
+            "extensions": [basic_extension("Ext1", branch="develop")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -329,14 +329,14 @@ class TestYamlComparer:
         assert "Taqasta branch: master" in result
         assert "Canasta branch: develop" in result
 
-    def test_compare_extensions_different_additional_steps(self, comparer):
+    def test_compare_extensions_different_additional_steps(self, comparer, basic_extension):
         """Test extensions with different additional steps."""
         taqasta = {
-            "extensions": [{"Ext1": {"additional steps": ["composer update", "step1"]}}]
+            "extensions": [basic_extension("Ext1", **{"additional steps": ["composer update", "step1"]})]
         }
 
         canasta = {
-            "extensions": [{"Ext1": {"additional steps": ["composer update", "step2"]}}]
+            "extensions": [basic_extension("Ext1", **{"additional steps": ["composer update", "step2"]})]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -345,14 +345,14 @@ class TestYamlComparer:
         assert "Only in Taqasta: ['step1']" in result
         assert "Only in Canasta: ['step2']" in result
 
-    def test_compare_skins_only_in_taqasta(self, comparer):
+    def test_compare_skins_only_in_taqasta(self, comparer, basic_skin):
         """Test skins present only in Taqasta."""
         taqasta = {
-            "skins": [{"Skin1": {"commit": "abc123"}}]
+            "skins": [basic_skin("Skin1", "abc123")]
         }
 
         canasta = {
-            "skins": [{"Skin2": {"commit": "def456"}}]
+            "skins": [basic_skin("Skin2", "def456")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
@@ -360,14 +360,14 @@ class TestYamlComparer:
         assert "Skins only in Taqasta:" in result
         assert "+ Skin1" in result
 
-    def test_compare_skins_different_commits(self, comparer):
+    def test_compare_skins_different_commits(self, comparer, basic_skin):
         """Test skins with different commits."""
         taqasta = {
-            "skins": [{"Skin1": {"commit": "abc123"}}]
+            "skins": [basic_skin("Skin1", "abc123")]
         }
 
         canasta = {
-            "skins": [{"Skin1": {"commit": "def456"}}]
+            "skins": [basic_skin("Skin1", "def456")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")
