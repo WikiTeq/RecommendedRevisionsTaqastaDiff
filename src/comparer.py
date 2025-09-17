@@ -335,7 +335,7 @@ class YamlComparer:
                                     continue  # Repository differences are shown separately
                                 if compare_repos_and_branches and clean_path == "branch":
                                     continue  # Branch differences are shown separately
-                                if compare_repos_and_branches and clean_path == "additional steps":
+                                if compare_repos_and_branches and clean_path.startswith("additional steps"):
                                     continue  # Additional steps differences are shown separately
 
                                 additional_differences.append(f"        {clean_path}: '{old_val}' → '{new_val}'")
