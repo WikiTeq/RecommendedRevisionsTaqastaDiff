@@ -3,7 +3,7 @@
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from src.cli import create_parser, main, resolve_git_reference
+from src.cli import create_parser, format_error_message, main, resolve_git_reference
 
 
 class TestCli:
@@ -28,6 +28,17 @@ class TestCli:
         """Test handling of empty strings."""
         result = resolve_git_reference(commit="", branch="", default_branch="master")
         assert result == "master"
+
+    def test_format_error_message(self):
+        """Test error message formatting."""
+        result = format_error_message("fetch data", ValueError("Network error"))
+        assert result == "Failed to fetch data: Network error"
+
+    def test_format_error_message_with_exception_details(self):
+        """Test error message formatting with detailed exception."""
+        error = RuntimeError("Connection timeout after 30 seconds")
+        result = format_error_message("download file", error)
+        assert result == "Failed to download file: Connection timeout after 30 seconds"
 
     def test_create_parser_default_values(self):
         """Test parser with default values."""

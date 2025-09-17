@@ -55,17 +55,17 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Compare main branch of Taqasta with main branch of Canasta
-  python -m yaml_diff_tool
+  # Compare master branch of Taqasta with main branch of Canasta (default)
+  yaml-diff-tool
 
   # Compare specific branches
-  python -m yaml_diff_tool --taqasta-branch develop --canasta-branch develop
+  yaml-diff-tool --taqasta-branch develop --canasta-branch develop
 
   # Compare specific commits
-  python -m yaml_diff_tool --taqasta-commit abc123 --canasta-commit def456
+  yaml-diff-tool --taqasta-commit abc123 --canasta-commit def456
 
   # Save output to file
-  python -m yaml_diff_tool --output diff.txt
+  yaml-diff-tool --output diff.txt
         """,
     )
 
