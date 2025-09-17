@@ -8,6 +8,25 @@ from .fetcher import YamlFetcher
 from .comparer import YamlComparer
 
 
+def resolve_git_reference(commit: str = None, branch: str = None, default_branch: str = "main") -> str:
+    """Resolve git reference, giving precedence to commit over branch.
+
+    Args:
+        commit: Commit hash if specified
+        branch: Branch name if specified
+        default_branch: Default branch to use if neither commit nor branch specified
+
+    Returns:
+        Git reference to use (commit takes precedence over branch)
+    """
+    if commit:
+        return commit
+    elif branch:
+        return branch
+    else:
+        return default_branch
+
+
 def create_parser() -> argparse.ArgumentParser:
     """Create the argument parser for the CLI."""
     parser = argparse.ArgumentParser(
@@ -77,8 +96,8 @@ def main() -> int:
         fetcher = YamlFetcher(cache_dir=args.cache_dir)
 
         # Determine which refs to use (commit takes precedence over branch)
-        taqasta_ref = args.taqasta_commit or args.taqasta_branch
-        canasta_ref = args.canasta_commit or args.canasta_branch
+        taqasta_ref = resolve_git_reference(args.taqasta_commit, args.taqasta_branch, "master")
+        canasta_ref = resolve_git_reference(args.canasta_commit, args.canasta_branch, "main")
 
         # Fetch YAML files
         taqasta_yaml = fetcher.fetch_taqasta_values(taqasta_ref)

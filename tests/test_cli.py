@@ -6,11 +6,31 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.cli import create_parser, main
+from src.cli import create_parser, main, resolve_git_reference
 
 
 class TestCli:
     """Test cases for CLI functionality."""
+
+    def test_resolve_git_reference_commit_priority(self):
+        """Test that commit takes priority over branch."""
+        result = resolve_git_reference(commit="abc123", branch="develop")
+        assert result == "abc123"
+
+    def test_resolve_git_reference_branch_only(self):
+        """Test branch resolution when no commit specified."""
+        result = resolve_git_reference(commit=None, branch="develop")
+        assert result == "develop"
+
+    def test_resolve_git_reference_default_branch(self):
+        """Test default branch when neither commit nor branch specified."""
+        result = resolve_git_reference(commit=None, branch=None, default_branch="main")
+        assert result == "main"
+
+    def test_resolve_git_reference_empty_strings(self):
+        """Test handling of empty strings."""
+        result = resolve_git_reference(commit="", branch="", default_branch="master")
+        assert result == "master"
 
     def test_create_parser_default_values(self):
         """Test parser with default values."""
