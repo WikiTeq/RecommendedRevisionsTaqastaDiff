@@ -320,9 +320,15 @@ class YamlComparer:
                                 old_val = change.get('old_value', 'None')
                                 new_val = change.get('new_value', 'None')
 
-                                # Skip repository differences that are equivalent
-                                if compare_repos_and_branches and clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
-                                    continue
+                                # Skip fields that are already handled explicitly
+                                if clean_path == 'commit':
+                                    continue  # Commit differences are shown separately
+                                if compare_repos_and_branches and clean_path == 'repository':
+                                    continue  # Repository differences are shown separately
+                                if compare_repos_and_branches and clean_path == 'branch':
+                                    continue  # Branch differences are shown separately
+                                if compare_repos_and_branches and clean_path == 'additional steps':
+                                    continue  # Additional steps differences are shown separately
 
                                 other_differences.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
                         elif change_type == 'type_changes':
