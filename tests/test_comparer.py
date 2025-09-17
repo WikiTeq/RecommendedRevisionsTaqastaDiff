@@ -13,6 +13,58 @@ class TestYamlComparer:
         """Create a YamlComparer instance."""
         return YamlComparer()
 
+    # Test data fixtures
+    @pytest.fixture
+    def basic_extension(self):
+        """Create a basic extension dict."""
+        def _basic_extension(name="Ext1", commit="abc123", **kwargs):
+            data = {"commit": commit}
+            data.update(kwargs)
+            return {name: data}
+        return _basic_extension
+
+    @pytest.fixture
+    def basic_skin(self):
+        """Create a basic skin dict."""
+        def _basic_skin(name="Skin1", commit="def456", **kwargs):
+            data = {"commit": commit}
+            data.update(kwargs)
+            return {name: data}
+        return _basic_skin
+
+    @pytest.fixture
+    def yaml_with_extension(self, basic_extension):
+        """Create YAML dict with a single extension."""
+        def _yaml_with_extension(ext_name="Ext1", ext_commit="abc123", **ext_kwargs):
+            return {"extensions": [basic_extension(ext_name, ext_commit, **ext_kwargs)]}
+        return _yaml_with_extension
+
+    @pytest.fixture
+    def yaml_with_skin(self, basic_skin):
+        """Create YAML dict with a single skin."""
+        def _yaml_with_skin(skin_name="Skin1", skin_commit="def456", **skin_kwargs):
+            return {"skins": [basic_skin(skin_name, skin_commit, **skin_kwargs)]}
+        return _yaml_with_skin
+
+    @pytest.fixture
+    def yaml_pair(self, yaml_with_extension, yaml_with_skin):
+        """Create a pair of YAML dicts for comparison."""
+        def _yaml_pair(taqasta_exts=None, canasta_exts=None, taqasta_skins=None, canasta_skins=None):
+            taqasta = {}
+            canasta = {}
+
+            if taqasta_exts:
+                taqasta["extensions"] = taqasta_exts
+            if taqasta_skins:
+                taqasta["skins"] = taqasta_skins
+            if canasta_exts:
+                canasta["extensions"] = canasta_exts
+            if canasta_skins:
+                canasta["skins"] = canasta_skins
+
+            return taqasta, canasta
+        return _yaml_pair
+
     def test_compare_no_differences(self, comparer):
         """Test comparison with identical YAML structures."""
         yaml1 = {
@@ -143,17 +195,17 @@ class TestYamlComparer:
         assert "Taqasta repo: https://github.com/user/repo1" in result
         assert "Canasta repo: https://github.com/user/repo2" in result
 
-    def test_compare_extensions_only_in_taqasta(self, comparer):
+    def test_compare_extensions_only_in_taqasta(self, comparer, basic_extension):
         """Test extensions present only in Taqasta."""
         taqasta = {
             "extensions": [
-                {"Ext1": {"commit": "abc123", "repository": "https://github.com/example/ext1"}},
-                {"Ext2": {"commit": "def456"}}
+                basic_extension("Ext1", "abc123", repository="https://github.com/example/ext1"),
+                basic_extension("Ext2", "def456")
             ]
         }
 
         canasta = {
-            "extensions": [{"Ext3": {"commit": "xyz789"}}]
+            "extensions": [basic_extension("Ext3", "xyz789")]
         }
 
         result = comparer.compare(taqasta, canasta, "master", "main")

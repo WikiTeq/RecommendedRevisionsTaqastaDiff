@@ -37,7 +37,8 @@ class YamlComparer:
         else:
             return path
 
-    def _normalize_repo_url(self, url: str) -> str:
+    @staticmethod
+    def _normalize_repo_url(url: str) -> str:
         """Normalize repository URL to ignore trivial differences."""
         if not url:
             return url
@@ -52,7 +53,8 @@ class YamlComparer:
 
         return url
 
-    def _repos_are_equivalent(self, repo1: str, repo2: str) -> bool:
+    @staticmethod
+    def _repos_are_equivalent(repo1: str, repo2: str) -> bool:
         """Check if two repository URLs are equivalent (ignoring trivial differences)."""
         # Handle None/empty cases - treat None and empty string as equivalent
         if (repo1 is None or repo1 == "") and (repo2 is None or repo2 == ""):
@@ -60,7 +62,49 @@ class YamlComparer:
         if repo1 is None or repo1 == "" or repo2 is None or repo2 == "":
             return False
 
-        return self._normalize_repo_url(repo1) == self._normalize_repo_url(repo2)
+        return YamlComparer._normalize_repo_url(repo1) == YamlComparer._normalize_repo_url(repo2)
+
+    @staticmethod
+    def _find_unique_items_with_equivalence(items1: set, items2: set, equivalence_func=None) -> tuple[set, set]:
+        """Find items unique to each set, using optional equivalence function.
+
+        Args:
+            items1: First set of items
+            items2: Second set of items
+            equivalence_func: Function to check equivalence between items (optional)
+
+        Returns:
+            Tuple of (only_in_1, only_in_2) sets
+        """
+        if equivalence_func is None:
+            # Simple set difference
+            return items1 - items2, items2 - items1
+
+        # Use equivalence function
+        only_in_1 = set()
+        only_in_2 = set()
+
+        # Find items only in items1
+        for item1 in items1:
+            found_equivalent = False
+            for item2 in items2:
+                if equivalence_func(item1, item2):
+                    found_equivalent = True
+                    break
+            if not found_equivalent:
+                only_in_1.add(item1)
+
+        # Find items only in items2
+        for item2 in items2:
+            found_equivalent = False
+            for item1 in items1:
+                if equivalence_func(item1, item2):
+                    found_equivalent = True
+                    break
+            if not found_equivalent:
+                only_in_2.add(item2)
+
+        return only_in_1, only_in_2
 
     def compare(self, taqasta_yaml: Dict[str, Any], canasta_yaml: Dict[str, Any],
                 taqasta_ref: str, canasta_ref: str, mw_version: str = None) -> str:
@@ -376,28 +420,9 @@ class YamlComparer:
                             canasta_repo_urls.add(data['repository'])
 
         # Compare using equivalence check
-        only_taqasta = set()
-        only_canasta = set()
-
-        # Find repositories only in Taqasta
-        for taqasta_repo in taqasta_repo_urls:
-            found_equivalent = False
-            for canasta_repo in canasta_repo_urls:
-                if self._repos_are_equivalent(taqasta_repo, canasta_repo):
-                    found_equivalent = True
-                    break
-            if not found_equivalent:
-                only_taqasta.add(taqasta_repo)
-
-        # Find repositories only in Canasta
-        for canasta_repo in canasta_repo_urls:
-            found_equivalent = False
-            for taqasta_repo in taqasta_repo_urls:
-                if self._repos_are_equivalent(taqasta_repo, canasta_repo):
-                    found_equivalent = True
-                    break
-            if not found_equivalent:
-                only_canasta.add(canasta_repo)
+        only_taqasta, only_canasta = self._find_unique_items_with_equivalence(
+            taqasta_repo_urls, canasta_repo_urls, self._repos_are_equivalent
+        )
 
         if only_taqasta:
             output.append("  Custom repositories only in Taqasta:")

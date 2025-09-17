@@ -83,13 +83,21 @@ class YamlFetcher:
 
     def _detect_mediawiki_version(self, taqasta_data: Dict[str, Any]) -> str:
         """Detect MediaWiki version from Taqasta YAML data."""
-        # Look for version information in the YAML
+        return self._extract_version_from_yaml(taqasta_data)
+
+    @staticmethod
+    def _extract_version_from_yaml(data: Dict[str, Any]) -> str:
+        """Extract MediaWiki version from YAML data.
+
+        Looks for version information in common keys and formats.
+        Returns '1.43' as default if no version found.
+        """
         # Common patterns: version, mediawiki_version, mw_version, etc.
         version_keys = ['version', 'mediawiki_version', 'mw_version', 'mediawiki']
 
         for key in version_keys:
-            if key in taqasta_data:
-                version = taqasta_data[key]
+            if key in data:
+                version = data[key]
                 if isinstance(version, str):
                     # Extract major.minor version (e.g., "1.43" from "1.43.0")
                     version_parts = version.split('.')
