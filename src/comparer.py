@@ -112,77 +112,96 @@ class YamlComparer:
 
         return "\n".join(output)
 
-    def _compare_extensions(self, taqasta_exts: List[Dict[str, Any]],
-                           canasta_exts: List[Dict[str, Any]]) -> str:
-        """Compare extensions between Taqasta and Canasta."""
+    def _compare_items(self, taqasta_items: List[Dict[str, Any]],
+                      canasta_items: List[Dict[str, Any]],
+                      item_type: str,
+                      show_details_for_unique: bool = True,
+                      compare_repos_and_branches: bool = True) -> str:
+        """Generic method to compare items (extensions or skins) between Taqasta and Canasta.
+
+        Args:
+            taqasta_items: List of item dicts from Taqasta
+            canasta_items: List of item dicts from Canasta
+            item_type: String like "Extensions" or "Skins"
+            show_details_for_unique: Whether to show commit/repo details for unique items
+            compare_repos_and_branches: Whether to compare repos/branches for common items
+        """
         output = []
 
         # Convert both lists to dicts for easier comparison
-        taqasta_ext_dict = {ext: data for item in taqasta_exts
-                           for ext, data in item.items()}
-        canasta_ext_dict = {ext: data for item in canasta_exts
-                           for ext, data in item.items()}
+        taqasta_item_dict = {item: data for item_list in taqasta_items
+                            for item, data in item_list.items()}
+        canasta_item_dict = {item: data for item_list in canasta_items
+                            for item, data in item_list.items()}
 
-        taqasta_names = set(taqasta_ext_dict.keys())
-        canasta_names = set(canasta_ext_dict.keys())
+        taqasta_names = set(taqasta_item_dict.keys())
+        canasta_names = set(canasta_item_dict.keys())
 
-        # Extensions only in Taqasta
+        # Items only in Taqasta
         only_taqasta = taqasta_names - canasta_names
         if only_taqasta:
-            output.append("  Extensions only in Taqasta:")
-            for ext in sorted(only_taqasta):
-                output.append(f"    + {ext}")
-                # Show key details
-                ext_data = taqasta_ext_dict[ext]
-                if 'commit' in ext_data:
-                    output.append(f"        commit: {ext_data['commit']}")
-                if 'repository' in ext_data:
-                    output.append(f"        repository: {ext_data['repository']}")
+            output.append(f"  {item_type} only in Taqasta:")
+            for item in sorted(only_taqasta):
+                output.append(f"    + {item}")
+                if show_details_for_unique:
+                    # Show key details
+                    item_data = taqasta_item_dict[item]
+                    if 'commit' in item_data:
+                        output.append(f"        commit: {item_data['commit']}")
+                    if 'repository' in item_data:
+                        output.append(f"        repository: {item_data['repository']}")
 
-        # Extensions only in Canasta
+        # Items only in Canasta
         only_canasta = canasta_names - taqasta_names
         if only_canasta:
-            output.append("  Extensions only in Canasta:")
-            for ext in sorted(only_canasta):
-                output.append(f"    - {ext}")
-                # Show key details
-                ext_data = canasta_ext_dict[ext]
-                if 'commit' in ext_data:
-                    output.append(f"        commit: {ext_data['commit']}")
-                if 'repository' in ext_data:
-                    output.append(f"        repository: {ext_data['repository']}")
+            output.append(f"  {item_type} only in Canasta:")
+            for item in sorted(only_canasta):
+                output.append(f"    - {item}")
+                if show_details_for_unique:
+                    # Show key details
+                    item_data = canasta_item_dict[item]
+                    if 'commit' in item_data:
+                        output.append(f"        commit: {item_data['commit']}")
+                    if 'repository' in item_data:
+                        output.append(f"        repository: {item_data['repository']}")
 
-        # Extensions in both - compare details
+        # Items in both - compare details
         common = taqasta_names & canasta_names
         if common:
             differences = []
-            for ext in sorted(common):
-                taqasta_data = taqasta_ext_dict[ext]
-                canasta_data = canasta_ext_dict[ext]
+            for item in sorted(common):
+                taqasta_data = taqasta_item_dict[item]
+                canasta_data = canasta_item_dict[item]
 
                 diff = DeepDiff(taqasta_data, canasta_data, ignore_order=True)
                 if diff:
                     # Check if there are any meaningful differences (not just equivalent repositories)
                     has_meaningful_differences = False
-                    
+
                     # Check specific fields first
                     taqasta_commit = taqasta_data.get('commit')
                     canasta_commit = canasta_data.get('commit')
-                    taqasta_repo = taqasta_data.get('repository')
-                    canasta_repo = canasta_data.get('repository')
-                    taqasta_branch = taqasta_data.get('branch')
-                    canasta_branch = canasta_data.get('branch')
-                    taqasta_steps = set(taqasta_data.get('additional steps', []))
-                    canasta_steps = set(canasta_data.get('additional steps', []))
-                    
-                    if any([
-                        taqasta_commit != canasta_commit,
-                        not self._repos_are_equivalent(taqasta_repo, canasta_repo),
-                        taqasta_branch != canasta_branch,
-                        taqasta_steps != canasta_steps
-                    ]):
-                        has_meaningful_differences = True
-                    
+
+                    if compare_repos_and_branches:
+                        taqasta_repo = taqasta_data.get('repository')
+                        canasta_repo = canasta_data.get('repository')
+                        taqasta_branch = taqasta_data.get('branch')
+                        canasta_branch = canasta_data.get('branch')
+                        taqasta_steps = set(taqasta_data.get('additional steps', []))
+                        canasta_steps = set(canasta_data.get('additional steps', []))
+
+                        if any([
+                            taqasta_commit != canasta_commit,
+                            not self._repos_are_equivalent(taqasta_repo, canasta_repo),
+                            taqasta_branch != canasta_branch,
+                            taqasta_steps != canasta_steps
+                        ]):
+                            has_meaningful_differences = True
+                    else:
+                        # For skins, just compare commits
+                        if taqasta_commit != canasta_commit:
+                            has_meaningful_differences = True
+
                     # Check DeepDiff for other meaningful differences
                     if not has_meaningful_differences:
                         for change_type, changes in diff.items():
@@ -191,29 +210,29 @@ class YamlComparer:
                                     clean_path = self._clean_diff_path(path)
                                     old_val = change.get('old_value', 'None')
                                     new_val = change.get('new_value', 'None')
-                                    
+
                                     # Skip repository differences that are equivalent
-                                    if clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
+                                    if compare_repos_and_branches and clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
                                         continue
-                                    
+
                                     has_meaningful_differences = True
                                     break
                                 if has_meaningful_differences:
                                     break
-                            elif change_type in ['type_changes', 'dictionary_item_added', 'dictionary_item_removed', 
+                            elif change_type in ['type_changes', 'dictionary_item_added', 'dictionary_item_removed',
                                                'iterable_item_added', 'iterable_item_removed']:
                                 # These are always meaningful differences
                                 has_meaningful_differences = True
                                 break
-                    
+
                     # Only add to differences if there are meaningful differences
                     if has_meaningful_differences:
-                        differences.append((ext, taqasta_data, canasta_data, diff))
+                        differences.append((item, taqasta_data, canasta_data, diff))
 
             if differences:
-                output.append("  Extensions with different configurations:")
-                for ext, taqasta_data, canasta_data, diff in differences:
-                    output.append(f"    ~ {ext}:")
+                output.append(f"  {item_type} with different configurations:")
+                for item, taqasta_data, canasta_data, diff in differences:
+                    output.append(f"    ~ {item}:")
 
                     # Compare commits
                     taqasta_commit = taqasta_data.get('commit')
@@ -222,169 +241,81 @@ class YamlComparer:
                         output.append(f"        Taqasta commit: {taqasta_commit}")
                         output.append(f"        Canasta commit: {canasta_commit}")
 
-                    # Compare repositories
-                    taqasta_repo = taqasta_data.get('repository')
-                    canasta_repo = canasta_data.get('repository')
-                    if not self._repos_are_equivalent(taqasta_repo, canasta_repo):
-                        output.append(f"        Taqasta repo: {taqasta_repo or 'wikimedia'}")
-                        output.append(f"        Canasta repo: {canasta_repo or 'wikimedia'}")
+                    if compare_repos_and_branches:
+                        # Compare repositories
+                        taqasta_repo = taqasta_data.get('repository')
+                        canasta_repo = canasta_data.get('repository')
+                        if not self._repos_are_equivalent(taqasta_repo, canasta_repo):
+                            output.append(f"        Taqasta repo: {taqasta_repo or 'wikimedia'}")
+                            output.append(f"        Canasta repo: {canasta_repo or 'wikimedia'}")
 
-                    # Compare branches
-                    taqasta_branch = taqasta_data.get('branch')
-                    canasta_branch = canasta_data.get('branch')
-                    if taqasta_branch != canasta_branch:
-                        output.append(f"        Taqasta branch: {taqasta_branch or 'REL1_43'}")
-                        output.append(f"        Canasta branch: {canasta_branch or 'REL1_43'}")
+                        # Compare branches
+                        taqasta_branch = taqasta_data.get('branch')
+                        canasta_branch = canasta_data.get('branch')
+                        if taqasta_branch != canasta_branch:
+                            output.append(f"        Taqasta branch: {taqasta_branch or 'REL1_43'}")
+                            output.append(f"        Canasta branch: {canasta_branch or 'REL1_43'}")
 
-                    # Compare additional steps
-                    taqasta_steps = set(taqasta_data.get('additional steps', []))
-                    canasta_steps = set(canasta_data.get('additional steps', []))
-                    if taqasta_steps != canasta_steps:
-                        only_taqasta_steps = taqasta_steps - canasta_steps
-                        only_canasta_steps = canasta_steps - taqasta_steps
-                        if only_taqasta_steps:
-                            output.append(f"        Only in Taqasta: {list(only_taqasta_steps)}")
-                        if only_canasta_steps:
-                            output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
-
-                    # Check if there are any meaningful differences after filtering
-                    has_meaningful_differences = any([
-                        taqasta_commit != canasta_commit,
-                        not self._repos_are_equivalent(taqasta_repo, canasta_repo),
-                        taqasta_branch != canasta_branch,
-                        taqasta_steps != canasta_steps
-                    ])
+                        # Compare additional steps
+                        taqasta_steps = set(taqasta_data.get('additional steps', []))
+                        canasta_steps = set(canasta_data.get('additional steps', []))
+                        if taqasta_steps != canasta_steps:
+                            only_taqasta_steps = taqasta_steps - canasta_steps
+                            only_canasta_steps = canasta_steps - taqasta_steps
+                            if only_taqasta_steps:
+                                output.append(f"        Only in Taqasta: {list(only_taqasta_steps)}")
+                            if only_canasta_steps:
+                                output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
 
                     # Show any other differences detected by DeepDiff
-                    if not has_meaningful_differences:
-                        # If no specific differences were shown, display the actual DeepDiff details
-                        other_differences = []
-                        for change_type, changes in diff.items():
-                            if change_type == 'values_changed':
-                                for path, change in changes.items():
-                                    clean_path = self._clean_diff_path(path)
-                                    old_val = change.get('old_value', 'None')
-                                    new_val = change.get('new_value', 'None')
+                    other_differences = []
+                    for change_type, changes in diff.items():
+                        if change_type == 'values_changed':
+                            for path, change in changes.items():
+                                clean_path = self._clean_diff_path(path)
+                                old_val = change.get('old_value', 'None')
+                                new_val = change.get('new_value', 'None')
 
-                                    # Skip repository differences that are equivalent
-                                    if clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
-                                        continue
+                                # Skip repository differences that are equivalent
+                                if compare_repos_and_branches and clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
+                                    continue
 
-                                    other_differences.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
-                            elif change_type == 'type_changes':
-                                for path, change in changes.items():
-                                    clean_path = self._clean_diff_path(path)
-                                    old_type = change.get('old_type', 'Unknown')
-                                    new_type = change.get('new_type', 'Unknown')
-                                    other_differences.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
-                            elif change_type == 'dictionary_item_added':
-                                for path in changes:
-                                    clean_path = self._clean_diff_path(path)
-                                    other_differences.append(f"          Added: {clean_path}")
-                            elif change_type == 'dictionary_item_removed':
-                                for path in changes:
-                                    clean_path = self._clean_diff_path(path)
-                                    other_differences.append(f"          Removed: {clean_path}")
-                            elif change_type == 'iterable_item_added':
-                                other_differences.append(f"          Added {len(changes)} item(s) to iterable")
-                            elif change_type == 'iterable_item_removed':
-                                other_differences.append(f"          Removed {len(changes)} item(s) from iterable")
+                                other_differences.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
+                        elif change_type == 'type_changes':
+                            for path, change in changes.items():
+                                clean_path = self._clean_diff_path(path)
+                                old_type = change.get('old_type', 'Unknown')
+                                new_type = change.get('new_type', 'Unknown')
+                                other_differences.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
+                        elif change_type == 'dictionary_item_added':
+                            for path in changes:
+                                clean_path = self._clean_diff_path(path)
+                                other_differences.append(f"          Added: {clean_path}")
+                        elif change_type == 'dictionary_item_removed':
+                            for path in changes:
+                                clean_path = self._clean_diff_path(path)
+                                other_differences.append(f"          Removed: {clean_path}")
+                        elif change_type == 'iterable_item_added':
+                            other_differences.append(f"          Added {len(changes)} item(s) to iterable")
+                        elif change_type == 'iterable_item_removed':
+                            other_differences.append(f"          Removed {len(changes)} item(s) from iterable")
 
-                        # Only show "Other differences" if there are actual differences to show
-                        if other_differences:
-                            output.append(f"        Other differences:")
-                            output.extend(other_differences)
-                        else:
-                            # If there are no meaningful differences, don't show this extension as different
-                            # Remove the last added line about this extension being different
-                            if output and output[-1].startswith(f"    ~ {ext}:"):
-                                output.pop()
+                    # Only show "Other differences" if there are actual differences to show
+                    if other_differences:
+                        output.append(f"        Other differences:")
+                        output.extend(other_differences)
 
         return "\n".join(output) if output else ""
+
+    def _compare_extensions(self, taqasta_exts: List[Dict[str, Any]],
+                           canasta_exts: List[Dict[str, Any]]) -> str:
+        """Compare extensions between Taqasta and Canasta."""
+        return self._compare_items(taqasta_exts, canasta_exts, "Extensions", show_details_for_unique=True, compare_repos_and_branches=True)
 
     def _compare_skins(self, taqasta_skins: List[Dict[str, Any]],
                       canasta_skins: List[Dict[str, Any]]) -> str:
         """Compare skins between Taqasta and Canasta."""
-        output = []
-
-        # Convert both lists to dicts
-        taqasta_skin_dict = {skin: data for item in taqasta_skins
-                            for skin, data in item.items()}
-        canasta_skin_dict = {skin: data for item in canasta_skins
-                            for skin, data in item.items()}
-
-        taqasta_names = set(taqasta_skin_dict.keys())
-        canasta_names = set(canasta_skin_dict.keys())
-
-        # Skins only in Taqasta
-        only_taqasta = taqasta_names - canasta_names
-        if only_taqasta:
-            output.append("  Skins only in Taqasta:")
-            for skin in sorted(only_taqasta):
-                output.append(f"    + {skin}")
-
-        # Skins only in Canasta
-        only_canasta = canasta_names - taqasta_names
-        if only_canasta:
-            output.append("  Skins only in Canasta:")
-            for skin in sorted(only_canasta):
-                output.append(f"    - {skin}")
-
-        # Skins in both - compare details
-        common = taqasta_names & canasta_names
-        if common:
-            differences = []
-            for skin in sorted(common):
-                taqasta_data = taqasta_skin_dict[skin]
-                canasta_data = canasta_skin_dict[skin]
-
-                diff = DeepDiff(taqasta_data, canasta_data, ignore_order=True)
-                if diff:
-                    differences.append((skin, taqasta_data, canasta_data, diff))
-
-            if differences:
-                output.append("  Skins with different configurations:")
-                for skin, taqasta_data, canasta_data, diff in differences:
-                    output.append(f"    ~ {skin}:")
-
-                    # Compare commits
-                    taqasta_commit = taqasta_data.get('commit')
-                    canasta_commit = canasta_data.get('commit')
-                    if taqasta_commit != canasta_commit:
-                        output.append(f"        Taqasta commit: {taqasta_commit}")
-                        output.append(f"        Canasta commit: {canasta_commit}")
-
-                    # Show any other differences detected by DeepDiff
-                    if taqasta_commit == canasta_commit:
-                        # If no specific differences were shown, display the actual DeepDiff details
-                        output.append(f"        Other differences:")
-                        for change_type, changes in diff.items():
-                            if change_type == 'values_changed':
-                                for path, change in changes.items():
-                                    clean_path = self._clean_diff_path(path)
-                                    old_val = change.get('old_value', 'None')
-                                    new_val = change.get('new_value', 'None')
-                                    output.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
-                            elif change_type == 'type_changes':
-                                for path, change in changes.items():
-                                    clean_path = self._clean_diff_path(path)
-                                    old_type = change.get('old_type', 'Unknown')
-                                    new_type = change.get('new_type', 'Unknown')
-                                    output.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
-                            elif change_type == 'dictionary_item_added':
-                                for path in changes:
-                                    clean_path = self._clean_diff_path(path)
-                                    output.append(f"          Added: {clean_path}")
-                            elif change_type == 'dictionary_item_removed':
-                                for path in changes:
-                                    clean_path = self._clean_diff_path(path)
-                                    output.append(f"          Removed: {clean_path}")
-                            elif change_type == 'iterable_item_added':
-                                output.append(f"          Added {len(changes)} item(s) to iterable")
-                            elif change_type == 'iterable_item_removed':
-                                output.append(f"          Removed {len(changes)} item(s) from iterable")
-
-        return "\n".join(output) if output else ""
+        return self._compare_items(taqasta_skins, canasta_skins, "Skins", show_details_for_unique=False, compare_repos_and_branches=False)
 
     def _compare_packages(self, taqasta_packages: List[Dict[str, str]],
                          canasta_exts: List[Dict[str, Any]]) -> str:
