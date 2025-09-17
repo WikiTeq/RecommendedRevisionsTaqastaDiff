@@ -65,7 +65,7 @@ class YamlFetcher:
         try:
             data = yaml.safe_load(content)
         except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {repo}/{ref}/{file_path}: {e}")
+            raise ValueError(f"Parse YAML file from {repo}/{ref}/{file_path}: {e}")
 
         # Cache the parsed data
         with cache_path.open('w', encoding='utf-8') as f:

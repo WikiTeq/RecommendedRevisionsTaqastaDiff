@@ -8,6 +8,19 @@ from .fetcher import YamlFetcher
 from .comparer import YamlComparer
 
 
+def format_error_message(context: str, error: Exception) -> str:
+    """Format error messages consistently across the CLI.
+
+    Args:
+        context: Description of what was being attempted
+        error: The exception that occurred
+
+    Returns:
+        Formatted error message
+    """
+    return f"Failed to {context}: {error}"
+
+
 def resolve_git_reference(commit: str = None, branch: str = None, default_branch: str = "main") -> str:
     """Resolve git reference, giving precedence to commit over branch.
 
@@ -117,7 +130,7 @@ def main() -> int:
                 args.output.write_text(diff_output)
                 print(f"Diff saved to {args.output}")
             except (OSError, PermissionError) as e:
-                print(f"Error writing to output file {args.output}: {e}", file=sys.stderr)
+                print(format_error_message(f"write to output file {args.output}", e), file=sys.stderr)
                 return 1
         else:
             print(diff_output)
@@ -128,7 +141,7 @@ def main() -> int:
         print("\nOperation cancelled by user", file=sys.stderr)
         return 130
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        print(format_error_message("compare YAML files", e), file=sys.stderr)
         return 1
 
 
