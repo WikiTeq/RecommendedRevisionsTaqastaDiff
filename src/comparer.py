@@ -185,33 +185,26 @@ class YamlComparer:
         taqasta_names = set(taqasta_item_dict.keys())
         canasta_names = set(canasta_item_dict.keys())
 
+        # Helper function to show unique items
+        def _show_unique_items(only_items: set, prefix: str, source_dict: Dict[str, Any]) -> None:
+            """Show items that are unique to one source."""
+            if only_items:
+                output.append(f"  {item_type} only in {prefix}:")
+                for item in sorted(only_items):
+                    output.append(f"    {'+' if prefix == 'Taqasta' else '-'} {item}")
+                    if show_details_for_unique:
+                        # Show key details
+                        item_data = source_dict[item]
+                        if "commit" in item_data:
+                            output.append(f"        commit: {item_data['commit']}")
+                        if "repository" in item_data:
+                            output.append(f"        repository: {item_data['repository']}")
+
         # Items only in Taqasta
-        only_taqasta = taqasta_names - canasta_names
-        if only_taqasta:
-            output.append(f"  {item_type} only in Taqasta:")
-            for item in sorted(only_taqasta):
-                output.append(f"    + {item}")
-                if show_details_for_unique:
-                    # Show key details
-                    item_data = taqasta_item_dict[item]
-                    if "commit" in item_data:
-                        output.append(f"        commit: {item_data['commit']}")
-                    if "repository" in item_data:
-                        output.append(f"        repository: {item_data['repository']}")
+        _show_unique_items(taqasta_names - canasta_names, "Taqasta", taqasta_item_dict)
 
         # Items only in Canasta
-        only_canasta = canasta_names - taqasta_names
-        if only_canasta:
-            output.append(f"  {item_type} only in Canasta:")
-            for item in sorted(only_canasta):
-                output.append(f"    - {item}")
-                if show_details_for_unique:
-                    # Show key details
-                    item_data = canasta_item_dict[item]
-                    if "commit" in item_data:
-                        output.append(f"        commit: {item_data['commit']}")
-                    if "repository" in item_data:
-                        output.append(f"        repository: {item_data['repository']}")
+        _show_unique_items(canasta_names - taqasta_names, "Canasta", canasta_item_dict)
 
         # Items in both - compare details
         common = taqasta_names & canasta_names

@@ -17,50 +17,73 @@ class TestYamlComparer:
 
     # Test data fixtures
     @pytest.fixture
-    def basic_extension(self) -> Callable[..., Dict[str, Dict[str, Any]]]:
-        """Create a basic extension dict."""
+    def basic_item(self) -> Callable[..., Dict[str, Dict[str, Any]]]:
+        """Create a basic item dict (extension or skin)."""
 
-        def _basic_extension(name: str = "Ext1", commit: str = "abc123", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
+        def _basic_item(name: str = "Item1", commit: str = "abc123", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
             data = {"commit": commit}
             data.update(kwargs)
             return {name: data}
+
+        return _basic_item
+
+    @pytest.fixture
+    def basic_extension(self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, Dict[str, Any]]]:
+        """Create a basic extension dict."""
+
+        def _basic_extension(name: str = "Ext1", commit: str = "abc123", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
+            return basic_item(name, commit, **kwargs)
 
         return _basic_extension
 
     @pytest.fixture
-    def basic_skin(self) -> Callable[..., Dict[str, Dict[str, Any]]]:
+    def basic_skin(self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, Dict[str, Any]]]:
         """Create a basic skin dict."""
 
         def _basic_skin(name: str = "Skin1", commit: str = "def456", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
-            data = {"commit": commit}
-            data.update(kwargs)
-            return {name: data}
+            return basic_item(name, commit, **kwargs)
 
         return _basic_skin
 
     @pytest.fixture
+    def yaml_with_item(
+        self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]
+    ) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
+        """Create YAML dict with a single item (extension or skin)."""
+
+        def _yaml_with_item(
+            section: str,
+            item_name: str = "Item1",
+            item_commit: str = "abc123",
+            **item_kwargs: Any
+        ) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
+            return {section: [basic_item(item_name, item_commit, **item_kwargs)]}
+
+        return _yaml_with_item
+
+    @pytest.fixture
     def yaml_with_extension(
-        self, basic_extension: Callable[..., Dict[str, Dict[str, Any]]]
+        self, yaml_with_item: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]
     ) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
         """Create YAML dict with a single extension."""
 
         def _yaml_with_extension(
             ext_name: str = "Ext1", ext_commit: str = "abc123", **ext_kwargs: Any
         ) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
-            return {"extensions": [basic_extension(ext_name, ext_commit, **ext_kwargs)]}
+            return yaml_with_item("extensions", ext_name, ext_commit, **ext_kwargs)
 
         return _yaml_with_extension
 
     @pytest.fixture
     def yaml_with_skin(
-        self, basic_skin: Callable[..., Dict[str, Dict[str, Any]]]
+        self, yaml_with_item: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]
     ) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
         """Create YAML dict with a single skin."""
 
         def _yaml_with_skin(
             skin_name: str = "Skin1", skin_commit: str = "def456", **skin_kwargs: Any
         ) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
-            return {"skins": [basic_skin(skin_name, skin_commit, **skin_kwargs)]}
+            return yaml_with_item("skins", skin_name, skin_commit, **skin_kwargs)
 
         return _yaml_with_skin
 
