@@ -46,18 +46,18 @@ class TestYamlComparer:
         # Test root['field'] format
         assert comparer._clean_diff_path("root['Wikidata ID']") == "Wikidata ID"
         assert comparer._clean_diff_path("root['commit']") == "commit"
-        
+
         # Test root[field] format
         assert comparer._clean_diff_path("root[0]") == "0"
         assert comparer._clean_diff_path("root[1]") == "1"
-        
+
         # Test root.field format
         assert comparer._clean_diff_path("root.field") == "field"
-        
+
         # Test complex paths with array indices
         assert comparer._clean_diff_path("root['steps'][1]") == "steps[1]"
         assert comparer._clean_diff_path("root['items'][0]") == "items[0]"
-        
+
         # Test already clean paths
         assert comparer._clean_diff_path("field") == "field"
         assert comparer._clean_diff_path("some_field") == "some_field"
@@ -67,11 +67,11 @@ class TestYamlComparer:
         # Test removing .git suffix
         assert comparer._normalize_repo_url("https://github.com/user/repo.git") == "https://github.com/user/repo"
         assert comparer._normalize_repo_url("https://github.com/user/repo") == "https://github.com/user/repo"
-        
+
         # Test removing trailing slash
         assert comparer._normalize_repo_url("https://github.com/user/repo/") == "https://github.com/user/repo"
         assert comparer._normalize_repo_url("https://github.com/user/repo.git/") == "https://github.com/user/repo"
-        
+
         # Test empty/None URLs
         assert comparer._normalize_repo_url("") == ""
         assert comparer._normalize_repo_url(None) == None
@@ -83,25 +83,25 @@ class TestYamlComparer:
             "https://github.com/user/repo.git",
             "https://github.com/user/repo"
         ) == True
-        
+
         # Test equivalent URLs (with/without trailing slash)
         assert comparer._repos_are_equivalent(
             "https://github.com/user/repo/",
             "https://github.com/user/repo"
         ) == True
-        
+
         # Test equivalent URLs (both with .git and slash)
         assert comparer._repos_are_equivalent(
             "https://github.com/user/repo.git/",
             "https://github.com/user/repo"
         ) == True
-        
+
         # Test different repositories
         assert comparer._repos_are_equivalent(
             "https://github.com/user/repo1",
             "https://github.com/user/repo2"
         ) == False
-        
+
         # Test None/empty URLs
         assert comparer._repos_are_equivalent(None, None) == True
         assert comparer._repos_are_equivalent("", "") == True
