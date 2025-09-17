@@ -350,10 +350,16 @@ class YamlComparer:
                         elif change_type == "dictionary_item_added":
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
+                                # Skip additional steps as they're handled separately
+                                if compare_repos_and_branches and clean_path == "additional steps":
+                                    continue
                                 additional_differences.append(f"        Added: {clean_path}")
                         elif change_type == "dictionary_item_removed":
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
+                                # Skip additional steps as they're handled separately
+                                if compare_repos_and_branches and clean_path == "additional steps":
+                                    continue
                                 additional_differences.append(f"        Removed: {clean_path}")
                         elif change_type == "iterable_item_added":
                             for path, items in changes.items():
