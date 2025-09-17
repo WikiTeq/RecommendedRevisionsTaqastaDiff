@@ -65,19 +65,16 @@ class TestYamlComparer:
             return taqasta, canasta
         return _yaml_pair
 
-    def test_compare_no_differences(self, comparer):
+    def test_compare_no_differences(self, comparer, basic_extension, basic_skin, yaml_pair):
         """Test comparison with identical YAML structures."""
-        yaml1 = {
-            "extensions": [{"Ext1": {"commit": "abc123"}}],
-            "skins": [{"Skin1": {"commit": "def456"}}]
-        }
+        taqasta, canasta = yaml_pair(
+            [basic_extension("Ext1", "abc123")],
+            [basic_extension("Ext1", "abc123")],
+            [basic_skin("Skin1", "def456")],
+            [basic_skin("Skin1", "def456")]
+        )
 
-        yaml2 = {
-            "extensions": [{"Ext1": {"commit": "abc123"}}],
-            "skins": [{"Skin1": {"commit": "def456"}}]
-        }
-
-        result = comparer.compare(yaml1, yaml2, "master", "main")
+        result = comparer.compare(taqasta, canasta, "master", "main")
 
         assert "No differences found!" in result
         assert "Comparing Taqasta (master) vs Canasta (main)" in result
