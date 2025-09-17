@@ -142,7 +142,7 @@ class TestCli:
 
         assert result == 1
         captured = capsys.readouterr()
-        assert "Error: Network error" in captured.err
+        assert "Failed to compare YAML files: Network error" in captured.err
 
     @patch('src.cli.YamlFetcher')
     @patch('src.cli.YamlComparer')
@@ -261,7 +261,7 @@ class TestCli:
 
         assert result == 1
         captured = capsys.readouterr()
-        assert "Error: Unexpected error" in captured.err
+        assert "Failed to compare YAML files: Unexpected error" in captured.err
 
     @patch('src.cli.YamlFetcher')
     @patch('src.cli.YamlComparer')
@@ -310,4 +310,4 @@ class TestCli:
 
         assert result == 1
         captured = capsys.readouterr()
-        assert "Error: Comparison error" in captured.err
+        assert "Failed to compare YAML files: Comparison error" in captured.err
