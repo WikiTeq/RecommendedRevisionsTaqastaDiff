@@ -35,22 +35,27 @@ class TestYamlComparer:
         return _basic_skin
 
     @pytest.fixture
-    def yaml_with_extension(self, basic_extension: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
+    def yaml_with_extension(self, basic_extension: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[
+            ..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
         """Create YAML dict with a single extension."""
-        def _yaml_with_extension(ext_name: str = "Ext1", ext_commit: str = "abc123", **ext_kwargs: Any) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
+        def _yaml_with_extension(ext_name: str = "Ext1", ext_commit: str = "abc123", **ext_kwargs: Any) -> Dict[
+                str, List[Dict[str, Dict[str, Any]]]]:
             return {"extensions": [basic_extension(ext_name, ext_commit, **ext_kwargs)]}
         return _yaml_with_extension
 
     @pytest.fixture
-    def yaml_with_skin(self, basic_skin: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
+    def yaml_with_skin(self, basic_skin: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[
+            ..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
         """Create YAML dict with a single skin."""
-        def _yaml_with_skin(skin_name: str = "Skin1", skin_commit: str = "def456", **skin_kwargs: Any) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
+        def _yaml_with_skin(skin_name: str = "Skin1", skin_commit: str = "def456", **skin_kwargs: Any) -> Dict[
+                str, List[Dict[str, Dict[str, Any]]]]:
             return {"skins": [basic_skin(skin_name, skin_commit, **skin_kwargs)]}
         return _yaml_with_skin
 
     @pytest.fixture
     def yaml_pair(self, yaml_with_extension: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]],
-                  yaml_with_skin: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]) -> Callable[..., tuple[Dict[str, Any], Dict[str, Any]]]:
+                   yaml_with_skin: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]) -> Callable[
+            ..., tuple[Dict[str, Any], Dict[str, Any]]]:
         """Create a pair of YAML dicts for comparison."""
         def _yaml_pair(taqasta_exts: List[Dict[str, Dict[str, Any]]] = None,
                       canasta_exts: List[Dict[str, Dict[str, Any]]] = None,

@@ -262,7 +262,8 @@ class YamlComparer:
                                     new_val = change.get('new_value', 'None')
 
                                     # Skip repository differences that are equivalent
-                                    if compare_repos_and_branches and clean_path == 'repository' and self._repos_are_equivalent(old_val, new_val):
+                                    if (compare_repos_and_branches and clean_path == 'repository' and
+                                            self._repos_are_equivalent(old_val, new_val)):
                                         continue
 
                                     has_meaningful_differences = True
@@ -342,7 +343,8 @@ class YamlComparer:
                                 clean_path = self._clean_diff_path(path)
                                 old_type = change.get('old_type', 'Unknown')
                                 new_type = change.get('new_type', 'Unknown')
-                                other_differences.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
+                                other_differences.append(
+                                    f"          {clean_path}: type changed from {old_type} to {new_type}")
                         elif change_type == 'dictionary_item_added':
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
@@ -364,12 +366,12 @@ class YamlComparer:
         return "\n".join(output) if output else ""
 
     def _compare_extensions(self, taqasta_exts: List[Dict[str, Any]],
-                           canasta_exts: List[Dict[str, Any]]) -> str:
+                             canasta_exts: List[Dict[str, Any]]) -> str:
         """Compare extensions between Taqasta and Canasta."""
         return self._compare_items(taqasta_exts, canasta_exts, "Extensions", show_details_for_unique=True, compare_repos_and_branches=True)
 
     def _compare_skins(self, taqasta_skins: List[Dict[str, Any]],
-                      canasta_skins: List[Dict[str, Any]]) -> str:
+                        canasta_skins: List[Dict[str, Any]]) -> str:
         """Compare skins between Taqasta and Canasta."""
         return self._compare_items(taqasta_skins, canasta_skins, "Skins", show_details_for_unique=False, compare_repos_and_branches=False)
 
