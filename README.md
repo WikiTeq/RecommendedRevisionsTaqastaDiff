@@ -27,7 +27,7 @@ pip install -e ".[dev]"
 To install only runtime dependencies (for CI/CD or container environments):
 
 ```bash
-pip install -r requirements.txt
+pip install .
 ```
 
 ## Usage
@@ -180,9 +180,8 @@ RecommendedRevisionsTaqastaDiff/
 ├── pytest.ini          # Pytest configuration
 ├── run_tests.py        # Test runner script with coverage
 ├── setup_dev.py        # Development environment setup
+├── .gitignore          # Git ignore rules
 ├── mascot.png          # Banner image
-├── venv/               # Virtual environment (created during setup)
-├── htmlcov/            # Coverage reports (generated during testing)
 └── README.md           # This file
 ```
 

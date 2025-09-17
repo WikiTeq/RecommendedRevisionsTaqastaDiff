@@ -81,13 +81,13 @@ Examples:
 
     parser.add_argument("--canasta-commit", help="Specific commit hash of Canasta repository to compare")
 
-    parser.add_argument("--output", type=Path, help="Output file to save the diff (default: stdout)")
+    parser.add_argument("--output", type=Path, help="Output file to save the diff")
 
     parser.add_argument(
         "--cache-dir",
         type=Path,
         default=Path.home() / ".cache" / "yaml_diff_tool",
-        help="Directory to cache downloaded YAML files",
+        help="Directory to cache downloaded YAML files (default: ~/.cache/yaml_diff_tool)",
     )
 
     return parser
