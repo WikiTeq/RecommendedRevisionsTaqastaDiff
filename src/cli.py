@@ -8,6 +8,12 @@ from .fetcher import YamlFetcher
 from .comparer import YamlComparer
 
 
+# Exit codes
+EXIT_SUCCESS = 0
+EXIT_KEYBOARD_INTERRUPT = 130
+EXIT_ERROR = 1
+
+
 def format_error_message(context: str, error: Exception) -> str:
     """Format error messages consistently across the CLI.
 
@@ -131,18 +137,18 @@ def main() -> int:
                 print(f"Diff saved to {args.output}")
             except (OSError, PermissionError) as e:
                 print(format_error_message(f"write to output file {args.output}", e), file=sys.stderr)
-                return 1
+                return EXIT_ERROR
         else:
             print(diff_output)
 
-        return 0
+        return EXIT_SUCCESS
 
     except KeyboardInterrupt:
         print("\nOperation cancelled by user", file=sys.stderr)
-        return 130
+        return EXIT_KEYBOARD_INTERRUPT
     except Exception as e:
         print(format_error_message("compare YAML files", e), file=sys.stderr)
-        return 1
+        return EXIT_ERROR
 
 
 if __name__ == "__main__":

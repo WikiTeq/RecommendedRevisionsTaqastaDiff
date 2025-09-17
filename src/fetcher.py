@@ -11,6 +11,12 @@ import yaml
 class YamlFetcher:
     """Fetches YAML files from GitHub repositories with caching."""
 
+    # Default timeout for HTTP requests (seconds)
+    DEFAULT_TIMEOUT = 30
+
+    # Default MediaWiki version when none is detected
+    DEFAULT_MW_VERSION = "1.43"
+
     def __init__(self, cache_dir: Path):
         """Initialize the fetcher with a cache directory."""
         self.cache_dir = cache_dir
@@ -24,7 +30,7 @@ class YamlFetcher:
             'User-Agent': 'yaml-diff-tool/1.0.0'
         })
         # Default timeout for requests
-        self.timeout = 30
+        self.timeout = self.DEFAULT_TIMEOUT
 
     def _get_cache_path(self, repo: str, ref: str, file_path: str) -> Path:
         """Generate a cache path for a file."""
@@ -112,8 +118,8 @@ class YamlFetcher:
                         # Assume it's a major version, add .0
                         return f"{version_str}.0"
 
-        # Default to 1.43 if no version found
-        return "1.43"
+        # Default to default version if no version found
+        return YamlFetcher.DEFAULT_MW_VERSION
 
     def fetch_canasta_revisions(self, ref: str, taqasta_data: Dict[str, Any] = None) -> Dict[str, Any]:
         """Fetch Canasta's recommended revisions YAML file for the appropriate MediaWiki version."""
@@ -121,7 +127,7 @@ class YamlFetcher:
         if taqasta_data:
             mw_version = self._detect_mediawiki_version(taqasta_data)
         else:
-            mw_version = "1.43"  # Default fallback
+            mw_version = self.DEFAULT_MW_VERSION  # Default fallback
 
         yaml_file = f"{mw_version}.yaml"
 

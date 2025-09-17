@@ -8,6 +8,12 @@ from deepdiff import DeepDiff
 class YamlComparer:
     """Compares YAML structures and generates detailed diff reports."""
 
+    # Separator line length for diff output
+    SEPARATOR_LENGTH = 70
+
+    # Default branch name for display when none specified
+    DEFAULT_BRANCH_DISPLAY = "REL1_43"
+
     def _clean_diff_path(self, path: str) -> str:
         """Clean up DeepDiff path to be more user-friendly."""
         # Remove "root" prefix and clean up the path
@@ -113,7 +119,7 @@ class YamlComparer:
         output.append(f"Comparing Taqasta ({taqasta_ref}) vs Canasta ({canasta_ref})")
         if mw_version:
             output.append(f"MediaWiki Version: {mw_version}")
-        output.append("=" * 70)
+        output.append("=" * self.SEPARATOR_LENGTH)
 
         # Compare extensions
         ext_diff = self._compare_extensions(
@@ -297,8 +303,8 @@ class YamlComparer:
                         taqasta_branch = taqasta_data.get('branch')
                         canasta_branch = canasta_data.get('branch')
                         if taqasta_branch != canasta_branch:
-                            output.append(f"        Taqasta branch: {taqasta_branch or 'REL1_43'}")
-                            output.append(f"        Canasta branch: {canasta_branch or 'REL1_43'}")
+                            output.append(f"        Taqasta branch: {taqasta_branch or self.DEFAULT_BRANCH_DISPLAY}")
+                            output.append(f"        Canasta branch: {canasta_branch or self.DEFAULT_BRANCH_DISPLAY}")
 
                         # Compare additional steps
                         taqasta_steps = set(taqasta_data.get('additional steps', []))
