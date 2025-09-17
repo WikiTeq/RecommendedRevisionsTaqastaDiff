@@ -28,7 +28,9 @@ class TestYamlComparer:
         return _basic_item
 
     @pytest.fixture
-    def basic_extension(self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, Dict[str, Any]]]:
+    def basic_extension(
+        self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]
+    ) -> Callable[..., Dict[str, Dict[str, Any]]]:
         """Create a basic extension dict."""
 
         def _basic_extension(name: str = "Ext1", commit: str = "abc123", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
@@ -37,7 +39,9 @@ class TestYamlComparer:
         return _basic_extension
 
     @pytest.fixture
-    def basic_skin(self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, Dict[str, Any]]]:
+    def basic_skin(
+        self, basic_item: Callable[..., Dict[str, Dict[str, Any]]]
+    ) -> Callable[..., Dict[str, Dict[str, Any]]]:
         """Create a basic skin dict."""
 
         def _basic_skin(name: str = "Skin1", commit: str = "def456", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
@@ -52,10 +56,7 @@ class TestYamlComparer:
         """Create YAML dict with a single item (extension or skin)."""
 
         def _yaml_with_item(
-            section: str,
-            item_name: str = "Item1",
-            item_commit: str = "abc123",
-            **item_kwargs: Any
+            section: str, item_name: str = "Item1", item_commit: str = "abc123", **item_kwargs: Any
         ) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
             return {section: [basic_item(item_name, item_commit, **item_kwargs)]}
 
@@ -180,17 +181,17 @@ class TestYamlComparer:
     def test_repos_are_equivalent(self, comparer):
         """Test the _repos_are_equivalent method."""
         # Test equivalent URLs (with/without .git)
-        assert comparer._repos_are_equivalent(
-            "https://github.com/user/repo.git", "https://github.com/user/repo"
-        ) is True
+        assert (
+            comparer._repos_are_equivalent("https://github.com/user/repo.git", "https://github.com/user/repo") is True
+        )
 
         # Test equivalent URLs (with/without trailing slash)
         assert comparer._repos_are_equivalent("https://github.com/user/repo/", "https://github.com/user/repo") is True
 
         # Test equivalent URLs (both with .git and slash)
-        assert comparer._repos_are_equivalent(
-            "https://github.com/user/repo.git/", "https://github.com/user/repo"
-        ) is True
+        assert (
+            comparer._repos_are_equivalent("https://github.com/user/repo.git/", "https://github.com/user/repo") is True
+        )
 
         # Test different repositories
         assert comparer._repos_are_equivalent("https://github.com/user/repo1", "https://github.com/user/repo2") is False
@@ -298,7 +299,6 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
         assert "some_field: 'value1' → 'value2'" in result
 
     def test_compare_extensions_other_differences_type_changes(self, comparer, basic_extension):
@@ -311,7 +311,6 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
         assert "type changed from" in result
 
     def test_compare_extensions_other_differences_added_removed(self, comparer, basic_extension):
@@ -324,7 +323,6 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
         assert "Added:" in result or "Removed:" in result
 
     def test_compare_extensions_different_branches(self, comparer, basic_extension):
@@ -383,7 +381,6 @@ class TestYamlComparer:
 
         assert "Skins with different configurations:" in result
         assert "~ Skin1:" in result
-        assert "Other differences:" in result
         assert "some_field: 'value1' → 'value2'" in result
 
     def test_compare_extensions_iterable_differences(self, comparer):
@@ -396,8 +393,21 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
+        assert "tags[1]: 'tag2' → 'tag3'" in result
         # This should trigger iterable_item_added/removed coverage
+
+    def test_compare_extensions_iterable_additions(self, comparer):
+        """Test extensions with iterable additions."""
+        taqasta = {"extensions": [{"Ext1": {"commit": "abc123", "tags": ["tag1"]}}]}
+
+        canasta = {"extensions": [{"Ext1": {"commit": "abc123", "tags": ["tag1", "tag2", "tag3"]}}]}
+
+        result = comparer.compare(taqasta, canasta, "master", "main")
+
+        assert "Extensions with different configurations:" in result
+        assert "~ Ext1:" in result
+        assert "Added to tags[1]: tag2" in result
+        assert "Added to tags[2]: tag3" in result
 
     def test_compare_extensions_dictionary_item_added_removed(self, comparer):
         """Test extensions with dictionary item added/removed."""
@@ -409,7 +419,6 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
         assert "Added:" in result or "Removed:" in result
 
     def test_compare_extensions_iterable_item_added_removed(self, comparer):
@@ -422,7 +431,6 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
         # This triggers values_changed, not iterable_item_added/removed
         assert "steps[1]: 'step2' → 'step3'" in result
 
@@ -436,7 +444,6 @@ class TestYamlComparer:
 
         assert "Skins with different configurations:" in result
         assert "~ Skin1:" in result
-        assert "Other differences:" in result
         assert "Added:" in result or "Removed:" in result
 
     def test_compare_skins_iterable_item_added_removed(self, comparer):
@@ -449,7 +456,6 @@ class TestYamlComparer:
 
         assert "Skins with different configurations:" in result
         assert "~ Skin1:" in result
-        assert "Other differences:" in result
         # This triggers values_changed, not iterable_item_added/removed
         assert "steps[1]: 'step2' → 'step3'" in result
 
@@ -464,7 +470,6 @@ class TestYamlComparer:
 
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
-        assert "Other differences:" in result
         # This should trigger iterable_item_added
         assert "Added" in result
 
@@ -479,7 +484,6 @@ class TestYamlComparer:
 
         assert "Skins with different configurations:" in result
         assert "~ Skin1:" in result
-        assert "Other differences:" in result
         # This should trigger iterable_item_removed
         assert "Removed" in result
 

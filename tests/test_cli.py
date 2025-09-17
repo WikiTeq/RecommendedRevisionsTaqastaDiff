@@ -204,8 +204,9 @@ class TestCli:
     def test_main_module_execution_calls_main(self):
         """Test that the module execution calls main() when run directly."""
         # Test the actual if __name__ == "__main__" block by importing and checking
-        import src.cli
         import sys
+
+        import src.cli
 
         # Store original sys.argv
         original_argv = sys.argv

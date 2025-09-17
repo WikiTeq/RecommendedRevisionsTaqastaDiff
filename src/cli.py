@@ -5,9 +5,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from .fetcher import YamlFetcher
 from .comparer import YamlComparer
-
+from .fetcher import YamlFetcher
 
 # Exit codes
 EXIT_SUCCESS = 0
@@ -28,7 +27,9 @@ def format_error_message(context: str, error: Exception) -> str:
     return f"Failed to {context}: {error}"
 
 
-def resolve_git_reference(commit: Optional[str] = None, branch: Optional[str] = None, default_branch: str = "main") -> str:
+def resolve_git_reference(
+    commit: Optional[str] = None, branch: Optional[str] = None, default_branch: str = "main"
+) -> str:
     """Resolve git reference, giving precedence to commit over branch.
 
     Args:

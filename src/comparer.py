@@ -320,7 +320,7 @@ class YamlComparer:
                                 output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
 
                     # Show any other differences detected by DeepDiff
-                    other_differences = []
+                    additional_differences = []
                     for change_type, changes in diff.items():
                         if change_type == "values_changed":
                             for path, change in changes.items():
@@ -338,32 +338,49 @@ class YamlComparer:
                                 if compare_repos_and_branches and clean_path == "additional steps":
                                     continue  # Additional steps differences are shown separately
 
-                                other_differences.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
+                                additional_differences.append(f"        {clean_path}: '{old_val}' → '{new_val}'")
                         elif change_type == "type_changes":
                             for path, change in changes.items():
                                 clean_path = self._clean_diff_path(path)
                                 old_type = change.get("old_type", "Unknown")
                                 new_type = change.get("new_type", "Unknown")
-                                other_differences.append(
-                                    f"          {clean_path}: type changed from {old_type} to {new_type}"
+                                additional_differences.append(
+                                    f"        {clean_path}: type changed from {old_type} to {new_type}"
                                 )
                         elif change_type == "dictionary_item_added":
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
-                                other_differences.append(f"          Added: {clean_path}")
+                                additional_differences.append(f"        Added: {clean_path}")
                         elif change_type == "dictionary_item_removed":
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
-                                other_differences.append(f"          Removed: {clean_path}")
+                                additional_differences.append(f"        Removed: {clean_path}")
                         elif change_type == "iterable_item_added":
-                            other_differences.append(f"          Added {len(changes)} item(s) to iterable")
+                            for path, items in changes.items():
+                                clean_path = self._clean_diff_path(path)
+                                # Skip additional steps as they're handled separately
+                                if compare_repos_and_branches and clean_path.startswith("additional steps"):
+                                    continue
+                                if isinstance(items, list):
+                                    for item in items:
+                                        additional_differences.append(f"        Added to {clean_path}: {item}")
+                                else:
+                                    additional_differences.append(f"        Added to {clean_path}: {items}")
                         elif change_type == "iterable_item_removed":
-                            other_differences.append(f"          Removed {len(changes)} item(s) from iterable")
+                            for path, items in changes.items():
+                                clean_path = self._clean_diff_path(path)
+                                # Skip additional steps as they're handled separately
+                                if compare_repos_and_branches and clean_path.startswith("additional steps"):
+                                    continue
+                                if isinstance(items, list):
+                                    for item in items:
+                                        additional_differences.append(f"        Removed from {clean_path}: {item}")
+                                else:
+                                    additional_differences.append(f"        Removed from {clean_path}: {items}")
 
-                    # Only show "Other differences" if there are actual differences to show
-                    if other_differences:
-                        output.append("        Other differences:")
-                        output.extend(other_differences)
+                    # Show additional differences directly without categorization
+                    if additional_differences:
+                        output.extend(additional_differences)
 
         return "\n".join(output) if output else ""
 
