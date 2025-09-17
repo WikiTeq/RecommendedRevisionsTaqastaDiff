@@ -3,9 +3,49 @@
 import argparse
 import sys
 from pathlib import Path
+from typing import Optional
 
-from .fetcher import YamlFetcher
 from .comparer import YamlComparer
+from .fetcher import YamlFetcher
+
+# Exit codes
+EXIT_SUCCESS = 0
+EXIT_KEYBOARD_INTERRUPT = 130
+EXIT_ERROR = 1
+
+
+def format_error_message(context: str, error: Exception) -> str:
+    """Format error messages consistently across the CLI.
+
+    Args:
+        context: Description of what was being attempted
+        error: The exception that occurred
+
+    Returns:
+        Formatted error message
+    """
+    return f"Failed to {context}: {error}"
+
+
+def resolve_git_reference(
+    commit: Optional[str] = None, branch: Optional[str] = None, default_branch: str = "main"
+) -> str:
+    """Resolve git reference, giving precedence to commit over branch.
+
+    Args:
+        commit: Commit hash if specified
+        branch: Branch name if specified
+        default_branch: Default branch to use if neither commit nor branch specified
+
+    Returns:
+        Git reference to use (commit takes precedence over branch)
+    """
+    if commit:
+        return commit
+    elif branch:
+        return branch
+    else:
+        return default_branch
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -15,53 +55,39 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Compare main branch of Taqasta with main branch of Canasta
-  python -m yaml_diff_tool
+  # Compare master branch of Taqasta with main branch of Canasta (default)
+  yaml-diff-tool
 
   # Compare specific branches
-  python -m yaml_diff_tool --taqasta-branch develop --canasta-branch develop
+  yaml-diff-tool --taqasta-branch develop --canasta-branch develop
 
   # Compare specific commits
-  python -m yaml_diff_tool --taqasta-commit abc123 --canasta-commit def456
+  yaml-diff-tool --taqasta-commit abc123 --canasta-commit def456
 
   # Save output to file
-  python -m yaml_diff_tool --output diff.txt
-        """
+  yaml-diff-tool --output diff.txt
+        """,
     )
 
     parser.add_argument(
-        "--taqasta-branch",
-        default="master",
-        help="Branch of Taqasta repository to compare (default: master)"
+        "--taqasta-branch", default="master", help="Branch of Taqasta repository to compare (default: master)"
     )
 
     parser.add_argument(
-        "--canasta-branch",
-        default="main",
-        help="Branch of Canasta repository to compare (default: main)"
+        "--canasta-branch", default="main", help="Branch of Canasta repository to compare (default: main)"
     )
 
-    parser.add_argument(
-        "--taqasta-commit",
-        help="Specific commit hash of Taqasta repository to compare"
-    )
+    parser.add_argument("--taqasta-commit", help="Specific commit hash of Taqasta repository to compare")
 
-    parser.add_argument(
-        "--canasta-commit",
-        help="Specific commit hash of Canasta repository to compare"
-    )
+    parser.add_argument("--canasta-commit", help="Specific commit hash of Canasta repository to compare")
 
-    parser.add_argument(
-        "--output",
-        type=Path,
-        help="Output file to save the diff (default: stdout)"
-    )
+    parser.add_argument("--output", type=Path, help="Output file to save the diff (default: stdout)")
 
     parser.add_argument(
         "--cache-dir",
         type=Path,
         default=Path.home() / ".cache" / "yaml_diff_tool",
-        help="Directory to cache downloaded YAML files"
+        help="Directory to cache downloaded YAML files",
     )
 
     return parser
@@ -77,8 +103,8 @@ def main() -> int:
         fetcher = YamlFetcher(cache_dir=args.cache_dir)
 
         # Determine which refs to use (commit takes precedence over branch)
-        taqasta_ref = args.taqasta_commit or args.taqasta_branch
-        canasta_ref = args.canasta_commit or args.canasta_branch
+        taqasta_ref = resolve_git_reference(args.taqasta_commit, args.taqasta_branch, "master")
+        canasta_ref = resolve_git_reference(args.canasta_commit, args.canasta_branch, "main")
 
         # Fetch YAML files
         taqasta_yaml = fetcher.fetch_taqasta_values(taqasta_ref)
@@ -98,19 +124,19 @@ def main() -> int:
                 args.output.write_text(diff_output)
                 print(f"Diff saved to {args.output}")
             except (OSError, PermissionError) as e:
-                print(f"Error writing to output file {args.output}: {e}", file=sys.stderr)
-                return 1
+                print(format_error_message(f"write to output file {args.output}", e), file=sys.stderr)
+                return EXIT_ERROR
         else:
             print(diff_output)
 
-        return 0
+        return EXIT_SUCCESS
 
     except KeyboardInterrupt:
         print("\nOperation cancelled by user", file=sys.stderr)
-        return 130
+        return EXIT_KEYBOARD_INTERRUPT
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
+        print(format_error_message("compare YAML files", e), file=sys.stderr)
+        return EXIT_ERROR
 
 
 if __name__ == "__main__":
