@@ -145,6 +145,67 @@ class TestYamlFetcher:
         with pytest.raises(RuntimeError, match="Failed to fetch"):
             fetcher._fetch_from_github("owner/repo", "main", "path/file.yml")
 
+    def test_detect_mediawiki_version_string(self, fetcher):
+        """Test MediaWiki version detection from string."""
+        taqasta_data = {"version": "1.43.0"}
+        version = fetcher._detect_mediawiki_version(taqasta_data)
+        assert version == "1.43"
+
+    def test_detect_mediawiki_version_float(self, fetcher):
+        """Test MediaWiki version detection from float."""
+        taqasta_data = {"mediawiki_version": 1.44}
+        version = fetcher._detect_mediawiki_version(taqasta_data)
+        assert version == "1.44"
+
+    def test_detect_mediawiki_version_int(self, fetcher):
+        """Test MediaWiki version detection from int."""
+        taqasta_data = {"mw_version": 143}
+        version = fetcher._detect_mediawiki_version(taqasta_data)
+        assert version == "143.0"
+
+    def test_detect_mediawiki_version_default(self, fetcher):
+        """Test MediaWiki version detection with no version found."""
+        taqasta_data = {"extensions": []}
+        version = fetcher._detect_mediawiki_version(taqasta_data)
+        assert version == "1.43"
+
+    def test_detect_mediawiki_version_multiple_keys(self, fetcher):
+        """Test MediaWiki version detection with multiple version keys."""
+        taqasta_data = {"version": "1.39.0", "mediawiki_version": "1.44.0"}
+        version = fetcher._detect_mediawiki_version(taqasta_data)
+        assert version == "1.39"  # Should use first found key
+
+    @patch('src.fetcher.YamlFetcher._load_cached_or_fetch')
+    def test_fetch_canasta_revisions_with_version(self, mock_load, fetcher):
+        """Test fetching Canasta revisions with version detection."""
+        taqasta_data = {"version": "1.44.0"}
+        mock_load.return_value = {"extensions": []}
+
+        result = fetcher.fetch_canasta_revisions("main", taqasta_data)
+
+        # Should fetch 1.44.yaml
+        mock_load.assert_called_once_with(
+            repo="CanastaWiki/RecommendedRevisions",
+            ref="main",
+            file_path="1.44.yaml"
+        )
+        assert result == {"extensions": []}
+
+    @patch('src.fetcher.YamlFetcher._load_cached_or_fetch')
+    def test_fetch_canasta_revisions_without_version(self, mock_load, fetcher):
+        """Test fetching Canasta revisions without version data."""
+        mock_load.return_value = {"extensions": []}
+
+        result = fetcher.fetch_canasta_revisions("main")
+
+        # Should default to 1.43.yaml
+        mock_load.assert_called_once_with(
+            repo="CanastaWiki/RecommendedRevisions",
+            ref="main",
+            file_path="1.43.yaml"
+        )
+        assert result == {"extensions": []}
+
     @patch('src.fetcher.YamlFetcher._load_cached_or_fetch')
     def test_fetch_taqasta_values(self, mock_load, fetcher):
         """Test fetching Taqasta values."""

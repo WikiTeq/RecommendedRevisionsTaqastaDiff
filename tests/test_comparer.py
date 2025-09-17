@@ -30,6 +30,17 @@ class TestYamlComparer:
         assert "No differences found!" in result
         assert "Comparing Taqasta (master) vs Canasta (main)" in result
 
+    def test_compare_with_mediawiki_version(self, comparer):
+        """Test comparison with MediaWiki version display."""
+        yaml1 = {"extensions": []}
+        yaml2 = {"extensions": []}
+
+        result = comparer.compare(yaml1, yaml2, "master", "main", "1.44")
+
+        assert "Comparing Taqasta (master) vs Canasta (main)" in result
+        assert "MediaWiki Version: 1.44" in result
+        assert "No differences found!" in result
+
     def test_compare_extensions_only_in_taqasta(self, comparer):
         """Test extensions present only in Taqasta."""
         taqasta = {

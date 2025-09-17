@@ -9,10 +9,12 @@ class YamlComparer:
     """Compares YAML structures and generates detailed diff reports."""
 
     def compare(self, taqasta_yaml: Dict[str, Any], canasta_yaml: Dict[str, Any],
-                taqasta_ref: str, canasta_ref: str) -> str:
+                taqasta_ref: str, canasta_ref: str, mw_version: str = None) -> str:
         """Compare two YAML structures and return a formatted diff."""
         output = []
         output.append(f"Comparing Taqasta ({taqasta_ref}) vs Canasta ({canasta_ref})")
+        if mw_version:
+            output.append(f"MediaWiki Version: {mw_version}")
         output.append("=" * 70)
 
         # Compare extensions

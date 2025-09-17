@@ -68,6 +68,7 @@ class TestCli:
 
         mock_fetcher.fetch_taqasta_values.return_value = {"extensions": []}
         mock_fetcher.fetch_canasta_revisions.return_value = {"extensions": []}
+        mock_fetcher._detect_mediawiki_version.return_value = "1.43"
         mock_comparer.compare.return_value = "No differences found!"
 
         # Test with default arguments
@@ -77,9 +78,9 @@ class TestCli:
         assert result == 0
         mock_fetcher_class.assert_called_once()
         mock_fetcher.fetch_taqasta_values.assert_called_once_with("master")
-        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("main")
+        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("main", {"extensions": []})
         mock_comparer.compare.assert_called_once_with(
-            {"extensions": []}, {"extensions": []}, "master", "main"
+            {"extensions": []}, {"extensions": []}, "master", "main", "1.43"
         )
 
     @patch('src.cli.YamlFetcher')
@@ -94,6 +95,7 @@ class TestCli:
 
         mock_fetcher.fetch_taqasta_values.return_value = {"extensions": []}
         mock_fetcher.fetch_canasta_revisions.return_value = {"extensions": []}
+        mock_fetcher._detect_mediawiki_version.return_value = "1.43"
         mock_comparer.compare.return_value = "Diff output"
 
         # Mock Path object and its parent
@@ -133,6 +135,7 @@ class TestCli:
 
         mock_fetcher.fetch_taqasta_values.return_value = {"extensions": []}
         mock_fetcher.fetch_canasta_revisions.return_value = {"extensions": []}
+        mock_fetcher._detect_mediawiki_version.return_value = "1.43"
         mock_comparer.compare.return_value = "Diff output"
 
         # Test with both branch and commit specified
@@ -154,6 +157,7 @@ class TestCli:
 
         mock_fetcher.fetch_taqasta_values.return_value = {"extensions": []}
         mock_fetcher.fetch_canasta_revisions.return_value = {"extensions": []}
+        mock_fetcher._detect_mediawiki_version.return_value = "1.43"
         mock_comparer.compare.return_value = "Custom diff output"
 
         with patch('sys.argv', [
@@ -165,7 +169,7 @@ class TestCli:
 
         assert result == 0
         mock_fetcher.fetch_taqasta_values.assert_called_once_with("abc123")
-        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("feature-branch")
+        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("feature-branch", {"extensions": []})
 
     def test_main_module_execution(self):
         """Test that the module can be executed directly."""
@@ -251,6 +255,7 @@ class TestCli:
 
         mock_fetcher.fetch_taqasta_values.return_value = {"extensions": []}
         mock_fetcher.fetch_canasta_revisions.return_value = {"extensions": []}
+        mock_fetcher._detect_mediawiki_version.return_value = "1.43"
         mock_comparer.compare.return_value = "Diff output"
 
         # Mock Path object and its parent
@@ -277,6 +282,7 @@ class TestCli:
 
         mock_fetcher.fetch_taqasta_values.return_value = {"extensions": []}
         mock_fetcher.fetch_canasta_revisions.return_value = {"extensions": []}
+        mock_fetcher._detect_mediawiki_version.return_value = "1.43"
         mock_comparer.compare.side_effect = Exception("Comparison error")
 
         with patch('sys.argv', ['test']):

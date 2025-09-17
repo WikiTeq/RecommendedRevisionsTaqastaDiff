@@ -82,11 +82,14 @@ def main() -> int:
 
         # Fetch YAML files
         taqasta_yaml = fetcher.fetch_taqasta_values(taqasta_ref)
-        canasta_yaml = fetcher.fetch_canasta_revisions(canasta_ref)
+        canasta_yaml = fetcher.fetch_canasta_revisions(canasta_ref, taqasta_yaml)
+
+        # Detect MediaWiki version for display
+        mw_version = fetcher._detect_mediawiki_version(taqasta_yaml)
 
         # Compare and generate diff
         comparer = YamlComparer()
-        diff_output = comparer.compare(taqasta_yaml, canasta_yaml, taqasta_ref, canasta_ref)
+        diff_output = comparer.compare(taqasta_yaml, canasta_yaml, taqasta_ref, canasta_ref, mw_version)
 
         # Output the results
         if args.output:
