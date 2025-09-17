@@ -7,6 +7,7 @@ name = "yaml-diff-tool"
 version = "1.0.0"
 description = "Compare Taqasta values.yml with Canasta recommended revisions"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.8"
 dependencies = [
     "requests>=2.31.0",
@@ -15,7 +16,7 @@ dependencies = [
 ]
 
 authors = [
-    {name = "YAML Diff Tool"},
+    {name = "WikiTeq"},
 ]
 
 [project.optional-dependencies]

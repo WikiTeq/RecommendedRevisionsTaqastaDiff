@@ -313,9 +313,9 @@ isort src/
 
 ## License
 
-This project is part of the WikiTeq organization. Please refer to the WikiTeq organization licensing policies or contact the maintainers for licensing information.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-For more information about licensing, check with the WikiTeq organization or create an issue in this repository.
+This project is part of the WikiTeq organization.
 
 ## Support
 
