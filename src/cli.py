@@ -3,6 +3,7 @@
 import argparse
 import sys
 from pathlib import Path
+from typing import Optional
 
 from .fetcher import YamlFetcher
 from .comparer import YamlComparer
@@ -27,7 +28,7 @@ def format_error_message(context: str, error: Exception) -> str:
     return f"Failed to {context}: {error}"
 
 
-def resolve_git_reference(commit: str = None, branch: str = None, default_branch: str = "main") -> str:
+def resolve_git_reference(commit: Optional[str] = None, branch: Optional[str] = None, default_branch: str = "main") -> str:
     """Resolve git reference, giving precedence to commit over branch.
 
     Args:
@@ -64,42 +65,28 @@ Examples:
 
   # Save output to file
   python -m yaml_diff_tool --output diff.txt
-        """
+        """,
     )
 
     parser.add_argument(
-        "--taqasta-branch",
-        default="master",
-        help="Branch of Taqasta repository to compare (default: master)"
+        "--taqasta-branch", default="master", help="Branch of Taqasta repository to compare (default: master)"
     )
 
     parser.add_argument(
-        "--canasta-branch",
-        default="main",
-        help="Branch of Canasta repository to compare (default: main)"
+        "--canasta-branch", default="main", help="Branch of Canasta repository to compare (default: main)"
     )
 
-    parser.add_argument(
-        "--taqasta-commit",
-        help="Specific commit hash of Taqasta repository to compare"
-    )
+    parser.add_argument("--taqasta-commit", help="Specific commit hash of Taqasta repository to compare")
 
-    parser.add_argument(
-        "--canasta-commit",
-        help="Specific commit hash of Canasta repository to compare"
-    )
+    parser.add_argument("--canasta-commit", help="Specific commit hash of Canasta repository to compare")
 
-    parser.add_argument(
-        "--output",
-        type=Path,
-        help="Output file to save the diff (default: stdout)"
-    )
+    parser.add_argument("--output", type=Path, help="Output file to save the diff (default: stdout)")
 
     parser.add_argument(
         "--cache-dir",
         type=Path,
         default=Path.home() / ".cache" / "yaml_diff_tool",
-        help="Directory to cache downloaded YAML files"
+        help="Directory to cache downloaded YAML files",
     )
 
     return parser

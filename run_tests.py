@@ -30,39 +30,22 @@ Examples:
 
   # Run with verbose output
   python run_tests.py --verbose
-        """
+        """,
+    )
+
+    parser.add_argument("--no-coverage", action="store_true", help="Run tests without coverage reporting")
+
+    parser.add_argument(
+        "--html-only", action="store_true", help="Generate only HTML coverage report (no terminal output)"
     )
 
     parser.add_argument(
-        "--no-coverage",
-        action="store_true",
-        help="Run tests without coverage reporting"
+        "--fail-under", type=int, default=95, help="Fail if coverage is below this percentage (default: 95)"
     )
 
-    parser.add_argument(
-        "--html-only",
-        action="store_true",
-        help="Generate only HTML coverage report (no terminal output)"
-    )
+    parser.add_argument("--test-path", default="tests/", help="Path to tests to run (default: tests/)")
 
-    parser.add_argument(
-        "--fail-under",
-        type=int,
-        default=95,
-        help="Fail if coverage is below this percentage (default: 95)"
-    )
-
-    parser.add_argument(
-        "--test-path",
-        default="tests/",
-        help="Path to tests to run (default: tests/)"
-    )
-
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Run tests with verbose output"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Run tests with verbose output")
 
     return parser
 
@@ -88,10 +71,7 @@ def run_tests(coverage=True, html_only=False, fail_under=95, test_path="tests/",
         if html_only:
             cmd.extend(["--cov-report=html"])
         else:
-            cmd.extend([
-                "--cov-report=html",
-                "--cov-report=term-missing"
-            ])
+            cmd.extend(["--cov-report=html", "--cov-report=term-missing"])
 
         cmd.extend([f"--cov-fail-under={fail_under}"])
 
@@ -116,11 +96,7 @@ def main():
     verbose = args.verbose
 
     return run_tests(
-        coverage=coverage,
-        html_only=html_only,
-        fail_under=fail_under,
-        test_path=test_path,
-        verbose=verbose
+        coverage=coverage, html_only=html_only, fail_under=fail_under, test_path=test_path, verbose=verbose
     )
 
 

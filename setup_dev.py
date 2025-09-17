@@ -32,23 +32,16 @@ def main():
     success = True
 
     # Install development dependencies
-    if not run_command(
-        [sys.executable, "-m", "pip", "install", "-e", ".[dev]"],
-        "Installing development dependencies"
-    ):
+    if not run_command([sys.executable, "-m", "pip", "install", "-e", ".[dev]"], "Installing development dependencies"):
         success = False
 
     # Install pre-commit hooks
-    if not run_command(
-        [sys.executable, "-m", "pre_commit", "install"],
-        "Installing pre-commit hooks"
-    ):
+    if not run_command([sys.executable, "-m", "pre_commit", "install"], "Installing pre-commit hooks"):
         success = False
 
     # Run initial pre-commit checks
     if not run_command(
-        [sys.executable, "-m", "pre_commit", "run", "--all-files"],
-        "Running initial code quality checks"
+        [sys.executable, "-m", "pre_commit", "run", "--all-files"], "Running initial code quality checks"
     ):
         success = False
 
