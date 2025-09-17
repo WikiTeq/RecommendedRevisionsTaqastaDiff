@@ -86,7 +86,7 @@ class YamlFetcher:
         # Look for version information in the YAML
         # Common patterns: version, mediawiki_version, mw_version, etc.
         version_keys = ['version', 'mediawiki_version', 'mw_version', 'mediawiki']
-        
+
         for key in version_keys:
             if key in taqasta_data:
                 version = taqasta_data[key]
@@ -103,7 +103,7 @@ class YamlFetcher:
                     else:
                         # Assume it's a major version, add .0
                         return f"{version_str}.0"
-        
+
         # Default to 1.43 if no version found
         return "1.43"
 
@@ -114,9 +114,9 @@ class YamlFetcher:
             mw_version = self._detect_mediawiki_version(taqasta_data)
         else:
             mw_version = "1.43"  # Default fallback
-        
+
         yaml_file = f"{mw_version}.yaml"
-        
+
         return self._load_cached_or_fetch(
             repo="CanastaWiki/RecommendedRevisions",
             ref=ref,

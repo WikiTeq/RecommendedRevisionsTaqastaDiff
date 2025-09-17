@@ -8,6 +8,35 @@ from deepdiff import DeepDiff
 class YamlComparer:
     """Compares YAML structures and generates detailed diff reports."""
 
+    def _clean_diff_path(self, path: str) -> str:
+        """Clean up DeepDiff path to be more user-friendly."""
+        # Remove "root" prefix and clean up the path
+        if path.startswith("root"):
+            # Handle cases like root['field'][1] -> field[1] or root["field"][1] -> field[1]
+            if (path.startswith("root['") and "']" in path) or (path.startswith('root["') and '"]' in path):
+                # Find the first "']" or '"]' and remove "root['" or 'root["' prefix
+                if path.startswith("root['"):
+                    end_quote = path.find("']")
+                    prefix_len = 6  # "root['"
+                else:  # root[""
+                    end_quote = path.find('"]')
+                    prefix_len = 6  # 'root["'
+                
+                if end_quote > prefix_len:
+                    field_name = path[prefix_len:end_quote]
+                    remaining = path[end_quote+2:]  # Everything after "']" or '"]'
+                    return field_name + remaining
+            elif path.startswith("root[") and path.endswith("]"):
+                # Handle cases like root[0] -> 0
+                return path[5:-1]  # Remove "root[" and "]"
+            elif path.startswith("root."):
+                return path[5:]  # Remove "root."
+            else:
+                # Fallback: remove "root" prefix
+                return path[4:] if path.startswith("root") else path
+        else:
+            return path
+
     def compare(self, taqasta_yaml: Dict[str, Any], canasta_yaml: Dict[str, Any],
                 taqasta_ref: str, canasta_ref: str, mw_version: str = None) -> str:
         """Compare two YAML structures and return a formatted diff."""
@@ -159,20 +188,24 @@ class YamlComparer:
                         for change_type, changes in diff.items():
                             if change_type == 'values_changed':
                                 for path, change in changes.items():
+                                    clean_path = self._clean_diff_path(path)
                                     old_val = change.get('old_value', 'None')
                                     new_val = change.get('new_value', 'None')
-                                    output.append(f"          {path}: '{old_val}' → '{new_val}'")
+                                    output.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
                             elif change_type == 'type_changes':
                                 for path, change in changes.items():
+                                    clean_path = self._clean_diff_path(path)
                                     old_type = change.get('old_type', 'Unknown')
                                     new_type = change.get('new_type', 'Unknown')
-                                    output.append(f"          {path}: type changed from {old_type} to {new_type}")
+                                    output.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
                             elif change_type == 'dictionary_item_added':
                                 for path in changes:
-                                    output.append(f"          Added: {path}")
+                                    clean_path = self._clean_diff_path(path)
+                                    output.append(f"          Added: {clean_path}")
                             elif change_type == 'dictionary_item_removed':
                                 for path in changes:
-                                    output.append(f"          Removed: {path}")
+                                    clean_path = self._clean_diff_path(path)
+                                    output.append(f"          Removed: {clean_path}")
                             elif change_type == 'iterable_item_added':
                                 output.append(f"          Added {len(changes)} item(s) to iterable")
                             elif change_type == 'iterable_item_removed':
@@ -239,20 +272,24 @@ class YamlComparer:
                         for change_type, changes in diff.items():
                             if change_type == 'values_changed':
                                 for path, change in changes.items():
+                                    clean_path = self._clean_diff_path(path)
                                     old_val = change.get('old_value', 'None')
                                     new_val = change.get('new_value', 'None')
-                                    output.append(f"          {path}: '{old_val}' → '{new_val}'")
+                                    output.append(f"          {clean_path}: '{old_val}' → '{new_val}'")
                             elif change_type == 'type_changes':
                                 for path, change in changes.items():
+                                    clean_path = self._clean_diff_path(path)
                                     old_type = change.get('old_type', 'Unknown')
                                     new_type = change.get('new_type', 'Unknown')
-                                    output.append(f"          {path}: type changed from {old_type} to {new_type}")
+                                    output.append(f"          {clean_path}: type changed from {old_type} to {new_type}")
                             elif change_type == 'dictionary_item_added':
                                 for path in changes:
-                                    output.append(f"          Added: {path}")
+                                    clean_path = self._clean_diff_path(path)
+                                    output.append(f"          Added: {clean_path}")
                             elif change_type == 'dictionary_item_removed':
                                 for path in changes:
-                                    output.append(f"          Removed: {path}")
+                                    clean_path = self._clean_diff_path(path)
+                                    output.append(f"          Removed: {clean_path}")
                             elif change_type == 'iterable_item_added':
                                 output.append(f"          Added {len(changes)} item(s) to iterable")
                             elif change_type == 'iterable_item_removed':

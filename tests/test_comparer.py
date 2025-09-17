@@ -41,6 +41,27 @@ class TestYamlComparer:
         assert "MediaWiki Version: 1.44" in result
         assert "No differences found!" in result
 
+    def test_clean_diff_path(self, comparer):
+        """Test the _clean_diff_path method."""
+        # Test root['field'] format
+        assert comparer._clean_diff_path("root['Wikidata ID']") == "Wikidata ID"
+        assert comparer._clean_diff_path("root['commit']") == "commit"
+        
+        # Test root[field] format
+        assert comparer._clean_diff_path("root[0]") == "0"
+        assert comparer._clean_diff_path("root[1]") == "1"
+        
+        # Test root.field format
+        assert comparer._clean_diff_path("root.field") == "field"
+        
+        # Test complex paths with array indices
+        assert comparer._clean_diff_path("root['steps'][1]") == "steps[1]"
+        assert comparer._clean_diff_path("root['items'][0]") == "items[0]"
+        
+        # Test already clean paths
+        assert comparer._clean_diff_path("field") == "field"
+        assert comparer._clean_diff_path("some_field") == "some_field"
+
     def test_compare_extensions_only_in_taqasta(self, comparer):
         """Test extensions present only in Taqasta."""
         taqasta = {
@@ -126,7 +147,7 @@ class TestYamlComparer:
         assert "Extensions with different configurations:" in result
         assert "~ Ext1:" in result
         assert "Other differences:" in result
-        assert "root['some_field']: 'value1' → 'value2'" in result
+        assert "some_field: 'value1' → 'value2'" in result
 
     def test_compare_extensions_other_differences_type_changes(self, comparer):
         """Test extensions with type differences."""
@@ -239,7 +260,7 @@ class TestYamlComparer:
         assert "Skins with different configurations:" in result
         assert "~ Skin1:" in result
         assert "Other differences:" in result
-        assert "root['some_field']: 'value1' → 'value2'" in result
+        assert "some_field: 'value1' → 'value2'" in result
 
     def test_compare_extensions_iterable_differences(self, comparer):
         """Test extensions with iterable differences."""
@@ -291,7 +312,7 @@ class TestYamlComparer:
         assert "~ Ext1:" in result
         assert "Other differences:" in result
         # This triggers values_changed, not iterable_item_added/removed
-        assert "root['steps'][1]: 'step2' → 'step3'" in result
+        assert "steps[1]: 'step2' → 'step3'" in result
 
     def test_compare_skins_dictionary_item_added_removed(self, comparer):
         """Test skins with dictionary item added/removed."""
@@ -326,7 +347,7 @@ class TestYamlComparer:
         assert "~ Skin1:" in result
         assert "Other differences:" in result
         # This triggers values_changed, not iterable_item_added/removed
-        assert "root['steps'][1]: 'step2' → 'step3'" in result
+        assert "steps[1]: 'step2' → 'step3'" in result
 
     def test_compare_extensions_actual_iterable_added_removed(self, comparer):
         """Test extensions with actual iterable item added/removed."""
