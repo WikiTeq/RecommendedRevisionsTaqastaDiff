@@ -14,6 +14,14 @@ cd RecommendedRevisionsTaqastaDiff
 pip install -e .
 ```
 
+### Install with Development Dependencies
+
+For development with code quality tools:
+
+```bash
+pip install -e ".[dev]"
+```
+
 ### Install Dependencies Only
 
 ```bash
@@ -178,6 +186,62 @@ RecommendedRevisionsTaqastaDiff/
 ├── requirements.txt    # Dependencies
 ├── mascot.png         # Banner image
 └── README.md          # This file
+```
+
+## Development
+
+### Code Quality Tools
+
+This project uses several tools to maintain high code quality:
+
+- **[Black](https://black.readthedocs.io/)** - Code formatter (PEP 8 compliant)
+- **[flake8](https://flake8.pycqa.org/)** - Linting and style checking
+- **[mypy](https://mypy-lang.org/)** - Static type checking
+- **[isort](https://pycqa.github.io/isort/)** - Import sorting
+- **[pre-commit](https://pre-commit.com/)** - Git hook management
+
+### Setting up Development Environment
+
+1. Install development dependencies:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+
+2. Install pre-commit hooks:
+   ```bash
+   pre-commit install
+   ```
+
+3. Run all quality checks:
+   ```bash
+   pre-commit run --all-files
+   ```
+
+### Quality Gates
+
+The following checks run automatically on commits:
+
+- **Code formatting** with Black
+- **Import sorting** with isort
+- **Linting** with flake8
+- **Type checking** with mypy
+- **Tests** with pytest (95% coverage minimum)
+
+### Manual Quality Checks
+
+```bash
+# Run tests with coverage
+python run_tests.py
+
+# Type checking
+mypy src/
+
+# Linting
+flake8 src/
+
+# Code formatting
+black src/
+isort src/
 ```
 
 ## Contributing
