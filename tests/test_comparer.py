@@ -1,5 +1,7 @@
 """Tests for the YAML comparer module."""
 
+from typing import Any, Callable, Dict, List
+
 import pytest
 
 from src.comparer import YamlComparer
@@ -15,43 +17,47 @@ class TestYamlComparer:
 
     # Test data fixtures
     @pytest.fixture
-    def basic_extension(self):
+    def basic_extension(self) -> Callable[..., Dict[str, Dict[str, Any]]]:
         """Create a basic extension dict."""
-        def _basic_extension(name="Ext1", commit="abc123", **kwargs):
+        def _basic_extension(name: str = "Ext1", commit: str = "abc123", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
             data = {"commit": commit}
             data.update(kwargs)
             return {name: data}
         return _basic_extension
 
     @pytest.fixture
-    def basic_skin(self):
+    def basic_skin(self) -> Callable[..., Dict[str, Dict[str, Any]]]:
         """Create a basic skin dict."""
-        def _basic_skin(name="Skin1", commit="def456", **kwargs):
+        def _basic_skin(name: str = "Skin1", commit: str = "def456", **kwargs: Any) -> Dict[str, Dict[str, Any]]:
             data = {"commit": commit}
             data.update(kwargs)
             return {name: data}
         return _basic_skin
 
     @pytest.fixture
-    def yaml_with_extension(self, basic_extension):
+    def yaml_with_extension(self, basic_extension: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
         """Create YAML dict with a single extension."""
-        def _yaml_with_extension(ext_name="Ext1", ext_commit="abc123", **ext_kwargs):
+        def _yaml_with_extension(ext_name: str = "Ext1", ext_commit: str = "abc123", **ext_kwargs: Any) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
             return {"extensions": [basic_extension(ext_name, ext_commit, **ext_kwargs)]}
         return _yaml_with_extension
 
     @pytest.fixture
-    def yaml_with_skin(self, basic_skin):
+    def yaml_with_skin(self, basic_skin: Callable[..., Dict[str, Dict[str, Any]]]) -> Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]:
         """Create YAML dict with a single skin."""
-        def _yaml_with_skin(skin_name="Skin1", skin_commit="def456", **skin_kwargs):
+        def _yaml_with_skin(skin_name: str = "Skin1", skin_commit: str = "def456", **skin_kwargs: Any) -> Dict[str, List[Dict[str, Dict[str, Any]]]]:
             return {"skins": [basic_skin(skin_name, skin_commit, **skin_kwargs)]}
         return _yaml_with_skin
 
     @pytest.fixture
-    def yaml_pair(self, yaml_with_extension, yaml_with_skin):
+    def yaml_pair(self, yaml_with_extension: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]],
+                  yaml_with_skin: Callable[..., Dict[str, List[Dict[str, Dict[str, Any]]]]]) -> Callable[..., tuple[Dict[str, Any], Dict[str, Any]]]:
         """Create a pair of YAML dicts for comparison."""
-        def _yaml_pair(taqasta_exts=None, canasta_exts=None, taqasta_skins=None, canasta_skins=None):
-            taqasta = {}
-            canasta = {}
+        def _yaml_pair(taqasta_exts: List[Dict[str, Dict[str, Any]]] = None,
+                      canasta_exts: List[Dict[str, Dict[str, Any]]] = None,
+                      taqasta_skins: List[Dict[str, Dict[str, Any]]] = None,
+                      canasta_skins: List[Dict[str, Dict[str, Any]]] = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
+            taqasta: Dict[str, Any] = {}
+            canasta: Dict[str, Any] = {}
 
             if taqasta_exts:
                 taqasta["extensions"] = taqasta_exts
