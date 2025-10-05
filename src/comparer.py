@@ -315,9 +315,9 @@ class YamlComparer:
                             only_taqasta_steps = taqasta_steps - canasta_steps
                             only_canasta_steps = canasta_steps - taqasta_steps
                             if only_taqasta_steps:
-                                output.append(f"        Only in Taqasta: {list(only_taqasta_steps)}")
+                                output.append(f"        Only in Taqasta: {sorted(list(only_taqasta_steps))}")
                             if only_canasta_steps:
-                                output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
+                                output.append(f"        Only in Canasta: {sorted(list(only_canasta_steps))}")
 
                     # Show any other differences detected by DeepDiff
                     additional_differences = []
