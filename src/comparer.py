@@ -254,6 +254,10 @@ class YamlComparer:
                 else:
                     canasta_data["additional steps"] = []
 
+                if 'required extensions' in canasta_data:
+                    # Taqasta doesn't track required extensions
+                    del canasta_data['required extensions']
+
                 diff = DeepDiff(taqasta_data, canasta_data, ignore_order=True)
                 if diff:
                     # Check if there are any meaningful differences (not just equivalent repositories)

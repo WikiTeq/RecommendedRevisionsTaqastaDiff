@@ -229,7 +229,6 @@ EXTENSIONS:
     ~ EmailAuthorization:
         Taqasta commit: d14a4bb04e2004bb13023dd8a044fc530d558bb8
         Canasta commit: 69ca5f8dfa9217c542bfd34ee9736dc8e04d0903
-        Added: required extensions
     ~ EmbedVideo:
         Taqasta commit: 3d8124738d3f1696b42b6eba1d11e9aeae660551
         Canasta commit: 8c7c8994b1ac2466339e53674df9140c4de76c67
@@ -269,7 +268,6 @@ EXTENSIONS:
         Canasta branch: master
         Only in Taqasta: ['composer update']
         Added: Wikidata ID
-        Added: required extensions
     ~ LabeledSectionTransclusion:
         Taqasta commit: e7e5c6caf8faed52c8bdec9ee363511666405b20
         Canasta commit: 68ef6ea74b39e37278eadd5ab9a1ac62bd85de82
@@ -298,7 +296,6 @@ EXTENSIONS:
     ~ OpenIDConnect:
         Taqasta commit: f68146b341213ded4552540eb29ede133c6ff0b5
         Canasta commit: 5d9cdd7690ccbb3cac552fb85ff4a8742ee8b145
-        Added: required extensions
     ~ PageExchange:
         Taqasta commit: afda8c1ebe6e870841df47f9abeba5ac590594d7
         Canasta commit: eaca8502623f3d80354cbe56571840b215f5ab67
@@ -331,7 +328,6 @@ EXTENSIONS:
         Canasta repo: https://github.com/gesinn-it/SemanticDependencyUpdater
         Taqasta branch: old-master
         Canasta branch: REL1_43
-        Added: required extensions
     ~ SimpleChanges:
         Taqasta commit: None
         Canasta commit: 024aca4c80d2a6b697f3d85e99de8e198b126999
@@ -363,14 +359,9 @@ EXTENSIONS:
         Canasta commit: a3009ef62873535de56e18f62d629ca3494e9d77
         Taqasta branch: master
         Canasta branch: REL1_43
-    ~ VEForAll:
-        Added: required extensions
     ~ VariablesLua:
         Taqasta branch: master
         Canasta branch: REL1_43
-        Added: required extensions
-    ~ WSOAuth:
-        Added: required extensions
     ~ WatchAnalytics:
         Taqasta commit: da4ab0f2455ef9ad2d1593143f638988f9aa1dec
         Canasta commit: 0006628d32a15614968dc80e2edb40322ea33c76
