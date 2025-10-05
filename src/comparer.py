@@ -216,6 +216,24 @@ class YamlComparer:
             ]
             return list(set(steps) - set(IGNORED_STEPS))
 
+        def _skip_in_detailed_diff(clean_path: str) -> bool:
+            '''
+            Some entries (like commit) are always reported separately and should
+            be ignored when showing details
+            '''
+            if clean_path == "commit":
+                return True  # Commit differences are shown separately
+            if compare_repos_and_branches:
+                # The other fields are only shown separately when
+                # compare_repos_and_branches is true
+                SHOULD_SKIP = [
+                    'repository',
+                    'branch',
+                    'additional steps',
+                ]
+                return clean_path in SHOULD_SKIP
+            return False
+
         # Items in both - compare details
         common = taqasta_names & canasta_names
         if common:
@@ -351,14 +369,8 @@ class YamlComparer:
                                 new_val = change.get("new_value", "None")
 
                                 # Skip fields that are already handled explicitly
-                                if clean_path == "commit":
-                                    continue  # Commit differences are shown separately
-                                if compare_repos_and_branches and clean_path == "repository":
-                                    continue  # Repository differences are shown separately
-                                if compare_repos_and_branches and clean_path == "branch":
-                                    continue  # Branch differences are shown separately
-                                if compare_repos_and_branches and clean_path.startswith("additional steps"):
-                                    continue  # Additional steps differences are shown separately
+                                if _skip_in_detailed_diff(clean_path):
+                                    continue
 
                                 additional_differences.append(f"        {clean_path}: '{old_val}' → '{new_val}'")
                         elif change_type == "type_changes":
@@ -373,14 +385,14 @@ class YamlComparer:
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
                                 # Skip additional steps as they're handled separately
-                                if compare_repos_and_branches and clean_path == "additional steps":
+                                if _skip_in_detailed_diff(clean_path):
                                     continue
                                 additional_differences.append(f"        Added: {clean_path}")
                         elif change_type == "dictionary_item_removed":
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
                                 # Skip additional steps as they're handled separately
-                                if compare_repos_and_branches and clean_path == "additional steps":
+                                if _skip_in_detailed_diff(clean_path):
                                     continue
                                 additional_differences.append(f"        Removed: {clean_path}")
                         elif change_type == "iterable_item_added":

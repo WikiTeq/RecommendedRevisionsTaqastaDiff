@@ -206,7 +206,6 @@ EXTENSIONS:
     ~ Collection:
         Taqasta commit: None
         Canasta commit: f5f15ade19be8d5f07518d335be9a7047b6b7437
-        Added: commit
         Removed: gerrit_ref
     ~ CommentStreams:
         Taqasta commit: 25340d9d06a7547ba31d9dc4ef0ac100a48f70ed
@@ -251,19 +250,16 @@ EXTENSIONS:
         Taqasta branch: master
         Canasta branch: REL1_43
         Added: Wikidata ID
-        Removed: branch
     ~ HTMLTags:
         Taqasta commit: 3dc5caa3d586756f39abfef49053136267eb68ef
         Canasta commit: 3903111e4c1075e0f24695d8ee57aecf8d5cb4a8
         Taqasta branch: REL1_43
         Canasta branch: master
-        Added: branch
     ~ HeaderTabs:
         Taqasta commit: 2fa424dd8adfb31a27613715ef523b918675ea42
         Canasta commit: bcb060829c5d643e746921641ea5dbd5a84f35f4
         Taqasta branch: master
         Canasta branch: REL1_43
-        Removed: branch
     ~ JWTAuth:
         Taqasta commit: c7c0730160a84d6b60e3e1b6b108d790972f0f15
         Canasta commit: 1649b7a2baeaf996caf2de463d6004807e26748d
@@ -274,7 +270,6 @@ EXTENSIONS:
         Only in Taqasta: ['composer update']
         Added: Wikidata ID
         Added: required extensions
-        Removed: repository
     ~ LabeledSectionTransclusion:
         Taqasta commit: e7e5c6caf8faed52c8bdec9ee363511666405b20
         Canasta commit: 68ef6ea74b39e37278eadd5ab9a1ac62bd85de82
@@ -283,7 +278,6 @@ EXTENSIONS:
         Canasta commit: 27893843b7529951deed9a3ef9fc25c778934eea
         Taqasta branch: master
         Canasta branch: REL1_43
-        Removed: branch
     ~ MassMessage:
         Taqasta commit: 27ad797faa94d0d43294609eb00b836d7ab2a08e
         Canasta commit: 798cbd5d4e1099aeba97c2c7e1b05fdb01882292
@@ -310,7 +304,6 @@ EXTENSIONS:
         Canasta commit: eaca8502623f3d80354cbe56571840b215f5ab67
         Taqasta branch: REL1_43
         Canasta branch: master
-        Added: branch
     ~ PageForms:
         Taqasta commit: ffcfb416a4f18e17df5ff02eed6004c6933c0d8f
         Canasta commit: 8324bdaef560ee38e64a67a404082d3893c36ead
@@ -320,7 +313,6 @@ EXTENSIONS:
         Taqasta branch: REL1_43
         Canasta branch: master
         Added: Wikidata ID
-        Added: branch
     ~ Popups:
         Taqasta commit: 3567c401b261076c68cb4872ec32a8eac47ff681
         Canasta commit: 7d5a9c8a62e9f0152c6c73b6d286c65bb526a291
@@ -332,7 +324,6 @@ EXTENSIONS:
         Canasta commit: a2019146ef7fad359ac0503bb885f651d90272cb
         Taqasta branch: main
         Canasta branch: REL1_43
-        Removed: branch
     ~ SemanticDependencyUpdater:
         Taqasta commit: 8f927a9b0f1eb49359d30a76099fa1252905f64d
         Canasta commit: 28a86f1f7267c86f7fb8200f31ec6d690745a669
@@ -341,18 +332,15 @@ EXTENSIONS:
         Taqasta branch: old-master
         Canasta branch: REL1_43
         Added: required extensions
-        Removed: branch
     ~ SimpleChanges:
         Taqasta commit: None
         Canasta commit: 024aca4c80d2a6b697f3d85e99de8e198b126999
-        Added: commit
         Removed: gerrit_ref
     ~ SimpleMathJax:
         Taqasta commit: fab35e6ac66e1f5abd3c91a57719f8180dd346ef
         Canasta commit: 7c9de84d219d15243aa153867339ac1a9c1a22e5
         Taqasta branch: main
         Canasta branch: REL1_43
-        Removed: branch
     ~ TemplateStyles:
         Only in Canasta: ['composer update']
     ~ TemplateWizard:
@@ -375,14 +363,12 @@ EXTENSIONS:
         Canasta commit: a3009ef62873535de56e18f62d629ca3494e9d77
         Taqasta branch: master
         Canasta branch: REL1_43
-        Removed: branch
     ~ VEForAll:
         Added: required extensions
     ~ VariablesLua:
         Taqasta branch: master
         Canasta branch: REL1_43
         Added: required extensions
-        Removed: branch
     ~ WSOAuth:
         Added: required extensions
     ~ WatchAnalytics:
