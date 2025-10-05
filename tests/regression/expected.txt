@@ -398,24 +398,12 @@ COMPOSER PACKAGES:
     + mediawiki/simple-batch-upload @ 2.0.1
     + mediawiki/sub-page-list @ 2.0.2
   Extensions requiring composer update only in Canasta:
-    - abusefilter
-    - antispoof
-    - aws
     - bootstrap
-    - cirrussearch
-    - datatransfer
-    - elastica
-    - googleanalyticsmetrics
     - maps
     - massmessageemail
-    - oathauth
-    - openidconnect
     - semanticmediawiki
     - semanticresultformats
-    - templatestyles
     - timedmediahandler
-    - widgets
-    - wsoauth
 
 REPOSITORIES:
   Custom repositories only in Taqasta:

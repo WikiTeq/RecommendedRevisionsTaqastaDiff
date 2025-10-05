@@ -143,7 +143,7 @@ class YamlComparer:
             output.append(skin_diff)
 
         # Compare packages
-        pkg_diff = self._compare_packages(taqasta_yaml.get("packages", []), canasta_yaml.get("extensions", []))
+        pkg_diff = self._compare_packages(taqasta_yaml.get("packages", []), taqasta_yaml.get("extensions", []), canasta_yaml.get("extensions", []))
         if pkg_diff:
             output.append("\nCOMPOSER PACKAGES:")
             output.append(pkg_diff)
@@ -440,7 +440,12 @@ class YamlComparer:
             taqasta_skins, canasta_skins, "Skins", show_details_for_unique=False, compare_repos_and_branches=False
         )
 
-    def _compare_packages(self, taqasta_packages: List[Dict[str, Any]], canasta_exts: List[Dict[str, Any]]) -> str:
+    def _compare_packages(
+        self,
+        taqasta_packages: List[Dict[str, Any]],
+        taqasta_exts: List[Dict[str, Any]],
+        canasta_exts: List[Dict[str, Any]]
+    ) -> str:
         """Compare composer packages between Taqasta and Canasta."""
         output = []
 
@@ -455,6 +460,11 @@ class YamlComparer:
         for pkg in taqasta_packages:
             if "name" in pkg:
                 taqasta_package_names.add(pkg["name"].lower())
+        # And also any extensions with composer updates
+        for ext_item in taqasta_exts:
+            for ext_name, ext_data in ext_item.items():
+                if ext_data.get("additional steps") and "composer update" in ext_data["additional steps"]:
+                    taqasta_package_names.add(ext_name.lower())
 
         # Packages only in Taqasta
         only_taqasta = taqasta_package_names - canasta_packages
