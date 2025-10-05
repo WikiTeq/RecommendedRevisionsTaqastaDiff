@@ -1,0 +1,13 @@
+services:
+    py:
+        image: python:3.13
+        command: ["tail", "-f", "/dev/null"]
+        working_dir: /app
+        volumes:
+            - ./__main__.py:/app/__main__.py:ro
+            - ./pyproject.toml:/app/pyproject.toml:ro
+            - ./pytest.ini:/app/pytest.ini:ro
+            - ./run_tests.py:/app/run_tests.py:ro
+            - ./setup_dev.py:/app/setup_dev.py:ro
+            - ./src/:/app/src/:ro
+            - ./tests/:/app/tests/:ro
