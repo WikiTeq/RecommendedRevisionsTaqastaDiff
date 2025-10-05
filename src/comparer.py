@@ -207,6 +207,15 @@ class YamlComparer:
         # Items only in Canasta
         _show_unique_items(canasta_names - taqasta_names, "Canasta", canasta_item_dict)
 
+        def _filter_extra_steps(steps: List[str]) -> List[str]:
+            IGNORED_STEPS = [
+                # Taqasta does not track database updates
+                'database update',
+                # Taqasta loads submodules for all extensions
+                'git submodule update',
+            ]
+            return list(set(steps) - set(IGNORED_STEPS))
+
         # Items in both - compare details
         common = taqasta_names & canasta_names
         if common:
@@ -214,6 +223,18 @@ class YamlComparer:
             for item in sorted(common):
                 taqasta_data = taqasta_item_dict[item]
                 canasta_data = canasta_item_dict[item]
+
+                # Need to apply this filtering *before* the DeepDiff comparison
+                # to avoid false positives with the extension still having a
+                # meaningful difference but not showing anything
+                if "additional steps" in taqasta_data:
+                    taqasta_data["additional steps"] = _filter_extra_steps(taqasta_data["additional steps"])
+                else:
+                    taqasta_data["additional steps"] = []
+                if "additional steps" in canasta_data:
+                    canasta_data["additional steps"] = _filter_extra_steps(canasta_data["additional steps"])
+                else:
+                    canasta_data["additional steps"] = []
 
                 diff = DeepDiff(taqasta_data, canasta_data, ignore_order=True)
                 if diff:

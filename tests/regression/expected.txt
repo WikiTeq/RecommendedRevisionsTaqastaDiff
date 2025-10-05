@@ -179,8 +179,6 @@ EXTENSIONS:
     ~ AWS:
         Taqasta commit: 97c210475f82ed5bc86ea3cbf2726162ccbedbfe
         Canasta commit: f85bb579b57f22175ff0cbca7664ad26cacdbb58
-    ~ AbuseFilter:
-        Only in Canasta: ['database update']
     ~ AdminLinks:
         Taqasta commit: 60eda7201636218b80d83a637b70e5c753900e41
         Canasta commit: 92f1e05e2458368ad7a8477b2d84acfc99c36026
@@ -190,21 +188,15 @@ EXTENSIONS:
     ~ AntiSpoof:
         Taqasta commit: 29d219c52f412d84182f979a202405664b9424e6
         Canasta commit: a010c2d53618aa99b8b8a32d9665de9000e53188
-        Only in Canasta: ['database update']
-    ~ ApprovedRevs:
-        Only in Canasta: ['database update']
     ~ BetaFeatures:
         Taqasta commit: e2dc57ca67ca7d4188f3b921d5883ee532754724
         Canasta commit: b6d1cdf01dea38eabc69f55ae1d1ccb851080750
-        Only in Canasta: ['database update']
     ~ Cargo:
         Taqasta commit: a2865938165c1389d852df762f8c85073859e5dd
         Canasta commit: 01ac0984c8db0c4acf4e9003063d9e44d7d022a1
-        Only in Canasta: ['database update']
     ~ CheckUser:
         Taqasta commit: 53f7c98d3fd003aef8faf95dd08ee05139079fab
         Canasta commit: 1de925985d764b50f80c08bd473a23312435bdae
-        Only in Canasta: ['database update']
     ~ CirrusSearch:
         Taqasta commit: 209efea8657680d855eb5495550af26ee60cea82
         Canasta commit: 3461fc8daae0f1d8e555d1d1da21d6a76d836b3b
@@ -219,11 +211,9 @@ EXTENSIONS:
     ~ CommentStreams:
         Taqasta commit: 25340d9d06a7547ba31d9dc4ef0ac100a48f70ed
         Canasta commit: 23e8579bcbd4e7263836f2105d15fa7ef431f98e
-        Only in Canasta: ['database update']
     ~ ConfirmAccount:
         Taqasta commit: de9733a4bd8a3b26a2aed6b56eab56197026d116
         Canasta commit: dc1a1db096f4ecadfe178fccd26a1b7a854254ad
-        Only in Canasta: ['database update']
     ~ ContactPage:
         Taqasta commit: ad2cdd6a5bb1676dd42215f7585125a78140b121
         Canasta commit: 733c519feeafdf296b288500f317512262ffecb7
@@ -240,7 +230,6 @@ EXTENSIONS:
     ~ EmailAuthorization:
         Taqasta commit: d14a4bb04e2004bb13023dd8a044fc530d558bb8
         Canasta commit: 69ca5f8dfa9217c542bfd34ee9736dc8e04d0903
-        Only in Canasta: ['database update', 'git submodule update']
         Added: required extensions
     ~ EmbedVideo:
         Taqasta commit: 3d8124738d3f1696b42b6eba1d11e9aeae660551
@@ -253,7 +242,6 @@ EXTENSIONS:
     ~ ExternalData:
         Taqasta commit: 564932ba8606390f339291a626b67340af536c68
         Canasta commit: bee4371617089195e3885a3deef16c8fcb8de4fb
-        Only in Canasta: ['database update']
     ~ FlexDiagrams:
         Taqasta commit: 7e108c024e892b5dbecdada5dba7d62a93450d23
         Canasta commit: 183efb105deda9d228041b976cd36c50d3c63628
@@ -284,12 +272,9 @@ EXTENSIONS:
         Taqasta branch: main
         Canasta branch: master
         Only in Taqasta: ['composer update']
-        Only in Canasta: ['database update']
         Added: Wikidata ID
         Added: required extensions
         Removed: repository
-    ~ LDAPProvider:
-        Only in Canasta: ['database update']
     ~ LabeledSectionTransclusion:
         Taqasta commit: e7e5c6caf8faed52c8bdec9ee363511666405b20
         Canasta commit: 68ef6ea74b39e37278eadd5ab9a1ac62bd85de82
@@ -307,7 +292,6 @@ EXTENSIONS:
     ~ MediaUploader:
         Taqasta commit: 77d2936cb635478c667d216fec3dcf8e0880e0c7
         Canasta commit: b0f6d0f231891daee3da7fa39045640fa50fa4d2
-        Only in Canasta: ['database update']
     ~ MintyDocs:
         Taqasta commit: 760e10ddf4b1dd70caae76286e6afd6342f8f67b
         Canasta commit: 8300e744a12476e42f34e4571b0d6613dc9929c7
@@ -317,19 +301,15 @@ EXTENSIONS:
     ~ NewUserMessage:
         Taqasta commit: 28641bc5780fa8023106b33f8647fc7bd954eb19
         Canasta commit: cdc2bc20557ca97387a0be7713fcc550efd9edfe
-    ~ OATHAuth:
-        Only in Canasta: ['database update']
     ~ OpenIDConnect:
         Taqasta commit: f68146b341213ded4552540eb29ede133c6ff0b5
         Canasta commit: 5d9cdd7690ccbb3cac552fb85ff4a8742ee8b145
-        Only in Canasta: ['database update']
         Added: required extensions
     ~ PageExchange:
         Taqasta commit: afda8c1ebe6e870841df47f9abeba5ac590594d7
         Canasta commit: eaca8502623f3d80354cbe56571840b215f5ab67
         Taqasta branch: REL1_43
         Canasta branch: master
-        Only in Canasta: ['database update']
         Added: branch
     ~ PageForms:
         Taqasta commit: ffcfb416a4f18e17df5ff02eed6004c6933c0d8f
@@ -352,7 +332,6 @@ EXTENSIONS:
         Canasta commit: a2019146ef7fad359ac0503bb885f651d90272cb
         Taqasta branch: main
         Canasta branch: REL1_43
-        Only in Canasta: ['database update']
         Removed: branch
     ~ SemanticDependencyUpdater:
         Taqasta commit: 8f927a9b0f1eb49359d30a76099fa1252905f64d
@@ -374,8 +353,6 @@ EXTENSIONS:
         Taqasta branch: main
         Canasta branch: REL1_43
         Removed: branch
-    ~ SmiteSpam:
-        Only in Canasta: ['database update']
     ~ TemplateStyles:
         Only in Canasta: ['composer update']
     ~ TemplateWizard:
@@ -398,7 +375,6 @@ EXTENSIONS:
         Canasta commit: a3009ef62873535de56e18f62d629ca3494e9d77
         Taqasta branch: master
         Canasta branch: REL1_43
-        Only in Canasta: ['database update']
         Removed: branch
     ~ VEForAll:
         Added: required extensions
@@ -407,15 +383,11 @@ EXTENSIONS:
         Canasta branch: REL1_43
         Added: required extensions
         Removed: branch
-    ~ VoteNY:
-        Only in Canasta: ['database update']
     ~ WSOAuth:
-        Only in Canasta: ['database update']
         Added: required extensions
     ~ WatchAnalytics:
         Taqasta commit: da4ab0f2455ef9ad2d1593143f638988f9aa1dec
         Canasta commit: 0006628d32a15614968dc80e2edb40322ea33c76
-        Only in Canasta: ['database update']
     ~ Widgets:
         Added: persistent directories
     ~ WikiSEO:
