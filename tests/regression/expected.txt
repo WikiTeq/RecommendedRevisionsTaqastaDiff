@@ -111,38 +111,18 @@ EXTENSIONS:
     - BootstrapComponents
         commit: bec7dd3e864d61df620008143ebe879de70d5f0f
         repository: https://github.com/oetterer/BootstrapComponents
-    - CategoryTree
-    - Cite
-    - CiteThisPage
-    - CodeEditor
-    - ConfirmEdit
     - CreateRedirect
         commit: 17f4ab36038cdf7d568bd17dcf8ebc2110c9dcb9
-    - DiscussionTools
-    - Echo
-    - Gadgets
-    - ImageMap
     - InlineComments
         commit: 1e1015bfc8d7737265a9e348f8289a7292c5d1fc
-    - InputBox
-    - Interwiki
-    - Linter
-    - LoginNotify
     - Maps
         commit: 958b64d521732cc5ad3530cc94a09884d51bcefc
         repository: https://github.com/ProfessionalWiki/Maps
-    - Math
     - Mermaid
         commit: fd792683fef3c84a7cdd56f8f474c4da0dd630f2
         repository: https://github.com/SemanticMediaWiki/Mermaid
-    - MultimediaViewer
-    - Nuke
     - OAuth
         commit: 0d466bcb3c0146dedc44ac8dce2fea7f0d749f31
-    - PageImages
-    - ParserFunctions
-    - PdfHandler
-    - Poem
     - QuickInstantCommons
         commit: 3330ce1efd4a8143ee2525ad9f48654dd84c826c
     - RSS
@@ -153,9 +133,6 @@ EXTENSIONS:
         commit: 444c7ad5a019d0f0ba4d8e9c3b2178588571624d
     - RelatedArticles
         commit: f5de0bc44637825149ea940d755f7b419f62be32
-    - ReplaceText
-    - Scribunto
-    - SecureLinkFixer
     - SemanticCompoundQueries
         commit: 37872efe470a01294da9afeb4b109173665169f5
         repository: https://github.com/SemanticMediaWiki/SemanticCompoundQueries
@@ -182,28 +159,20 @@ EXTENSIONS:
         repository: https://github.com/ProfessionalWiki/SimpleBatchUpload
     - SocialProfile
         commit: 596821355ef2022171718f41a1109da01c6e3dbc
-    - SpamBlacklist
     - SubPageList
         commit: c016dcdb7866f20319731e6497b48fd43756505e
         repository: https://github.com/ProfessionalWiki/SubPageList
-    - SyntaxHighlight
-    - TemplateData
     - TemplateSandbox
         commit: db217336a3e2c455c5e24303b2e793623b80a055
     - TemplateStylesExtender
         commit: 97a375a037d3cd5a5ead000290883925183f9bb3
         repository: https://github.com/octfx/mediawiki-extensions-TemplateStylesExtender
-    - TextExtracts
-    - Thanks
     - TimedMediaHandler
         commit: b223fe9d63409696b54511777b1e3619b1a7673b
-    - TitleBlacklist
     - TwoColConflict
         commit: 377a8f2fd7b87a89354dc08e373d4e2b6d476211
-    - VisualEditor
     - WhosOnline
         commit: e072d08f58ea013a40f27dd95ef1eef8bca364c2
-    - WikiEditor
     - cldr
         commit: cf6c9c70150cec6c1193f6f50dc54b72dc6e0f40
   Extensions with different configurations:
@@ -457,11 +426,7 @@ SKINS:
   Skins only in Taqasta:
     + pivot
   Skins only in Canasta:
-    - MinervaNeue
-    - MonoBook
     - Pivot
-    - Timeless
-    - Vector
     - chameleon
   Skins with different configurations:
     ~ CologneBlue:

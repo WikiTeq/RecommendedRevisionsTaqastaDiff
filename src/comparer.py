@@ -188,9 +188,10 @@ class YamlComparer:
         # Helper function to show unique items
         def _show_unique_items(only_items: set, prefix: str, source_dict: Dict[str, Any]) -> None:
             """Show items that are unique to one source."""
-            if only_items:
+            excluding_bundled = [i for i in only_items if not "bundled" in source_dict[i]]
+            if excluding_bundled:
                 output.append(f"  {item_type} only in {prefix}:")
-                for item in sorted(only_items):
+                for item in sorted(excluding_bundled):
                     output.append(f"    {'+' if prefix == 'Taqasta' else '-'} {item}")
                     if show_details_for_unique:
                         # Show key details
