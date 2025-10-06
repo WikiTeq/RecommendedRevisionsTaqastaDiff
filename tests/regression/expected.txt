@@ -1,0 +1,434 @@
+Comparing Taqasta (master) vs Canasta (main)
+MediaWiki Version: 1.43
+======================================================================
+
+EXTENSIONS:
+  Extensions only in Taqasta:
+    + AddMessages
+        commit: a0af32f229d93016f3c3e80bcf2065e09f498064
+    + Auth_remoteuser
+        commit: c985d520c7aea38092ee7208be31f07a7251210d
+    + Buggy
+        commit: 49dc8fd9ae01195127e0106b94fb01beb5022eb7
+        repository: https://github.com/wikimedia/mediawiki-extensions-Buggy.git
+    + ChangeAuthor
+        commit: 89105aebc39d85c15149391832376d6ea85702c1
+    + Citoid
+        commit: ee1f920556ff245fd4366d8ceed15afb6aa1b0f8
+    + Cloudflare
+        commit: 9df89f3f5e0ace26b07d146167bab72540082fc8
+        repository: https://github.com/harugon/mediawiki-extensions-cloudflare.git
+    + DynamicPageList3
+        commit: e4faf608b0f5a77c4a4c3576a2a28216c7d2bbbf
+        repository: https://github.com/Universal-Omega/DynamicPageList3.git
+    + Flow
+        commit: fc462613fcdcefd03d03981d0660610cba21c6f6
+    + GoogleDocTag
+        commit: 50dfe68e36742b9c6ab24b734ab4401cf1d65178
+    + GoogleLogin
+        commit: 0c653d036198d5fd52f8588776b95415ccc0eef4
+    + HeadScript
+        commit: cc0fb94acd25a20292b0a4d5bbe74bac307b55fe
+    + IframePage
+        commit: 31f27b2388c2032e121a062561924419ce2fe0e9
+    + Lazyload
+        commit: 30a01cc149822353c9404ec178ec01848bae65c5
+        repository: https://github.com/mudkipme/mediawiki-lazyload.git
+    + LuaCache
+        commit: c654dacff3ae177d8ffc3dfd8c4f5e1e1ca7cb2f
+        repository: https://github.com/HydraWiki/LuaCache.git
+    + MassPasswordReset
+        commit: 04b7e765db994d41f5ca3a910e18f77105218d94
+        repository: https://github.com/nischayn22/MassPasswordReset.git
+    + MobileDetect
+        commit: 1c783c4abc9849e1409f386583404762463f263f
+    + Mpdf
+        commit: dcd9c9b4587d2caefe6a952ca49be7b72eff1da0
+    + NCBITaxonomyLookup
+        commit: 58727c6d1c62c3403a50e5e945b1a374701c3a93
+    + PDFEmbed
+        commit: f38758156639b34317ffc6a9e8b5b2624aebae8b
+        repository: https://github.com/WolfgangFahl/PDFEmbed.git
+    + PagePort
+        commit: bc7d6fc5e8e5c1ae7d29e24d309f89b202831c59
+    + PubmedParser
+        commit: 509c9a26b5c07fbc476448bd34b38cd8f5ec01b5
+        repository: https://github.com/bovender/PubmedParser.git
+    + Scopus
+        commit: 4fe8048459d9189626d82d9d93a0d5f906c43746
+        repository: https://github.com/nischayn22/Scopus.git
+    + SelectCategory
+        commit: 1f351647af2e235e11139aa8f1b70c19a3556c61
+    + Sentry
+        commit: 9d9162d83f921b66f6c14ed354d20607ecafa030
+        repository: https://github.com/WikiTeq/mediawiki-extensions-Sentry.git
+    + Share
+        commit: ffec5e3c4fad940320f3abeb7ea9104025f71612
+        repository: https://github.com/wikimedia/mediawiki-extensions-Share.git
+    + ShowMe
+        commit: 44e3569219e804829e1ff770bb9bd02b7dd7ec2b
+    + SimpleTippy
+        commit: 6b4ddff802db21a4c3443d7ce9dcab5ac39d625a
+        repository: https://github.com/vedmaka/mediawiki-extension-SimpleTippy.git
+    + SimpleTooltip
+        commit: 3146514ecda810d6ce9feb79ac8e0e0015f242eb
+        repository: https://github.com/Universal-Omega/SimpleTooltip.git
+    + SkinPerNamespace
+        commit: 33590b2659bf87274bb954f0d01377f5d679d94c
+    + Survey
+        commit: b0eb0fa7838827d2ce22be2fbd96ed9a6b182b7e
+    + Tabber
+        commit: 6c67baf4d18518fa78e07add4c032d62dd384b06
+        repository: https://gitlab.com/hydrawiki/extensions/Tabber.git
+    + TabberNeue
+        commit: 799f86514b6b72bb6be1d615232a5c7cf7f6cfa3
+        repository: https://github.com/StarCitizenTools/mediawiki-extensions-TabberNeue.git
+    + Tabs
+        commit: 505eac44a119ec3d804b8fd16d4c6b1f6abf7258
+    + TinyMCE
+        commit: 70467c1b6bcfa7e2f5d415040b6a997741402b4a
+    + TwitterTag
+        commit: 0ce9a66d1818eb7b77b91fb051957f99fc17351f
+    + UploadWizardExtraButtons
+        commit: accba1b9b6f50e67d709bd727c9f4ad6de78c0c0
+        repository: https://github.com/vedmaka/mediawiki-extension-UploadWizardExtraButtons.git
+    + WSSlots
+        commit: 9a39063a848130030c35944dea047386315051ae
+        repository: https://github.com/WikiTeq/WSSlots.git
+    + WikiCategoryTagCloud
+        commit: c895cae34e8e13116a0921e2babf4b72ae53874f
+        repository: https://github.com/wikimedia/mediawiki-extensions-WikiCategoryTagCloud.git
+    + WikiForum
+        commit: 2f28b51b58d8e9714cba210a74656851209f944f
+    + YouTube
+        commit: 01673ce5f560fabe09b0feb1e65b57cbf58aae39
+  Extensions only in Canasta:
+    - Babel
+        commit: 52c75f4ad7802fbcf930fd5506510e1451326601
+    - Bootstrap
+        commit: 0d6e4460f98e7d0207281b615e4bebbee64c2e46
+        repository: https://github.com/ProfessionalWiki/Bootstrap
+    - BootstrapComponents
+        commit: bec7dd3e864d61df620008143ebe879de70d5f0f
+        repository: https://github.com/oetterer/BootstrapComponents
+    - CreateRedirect
+        commit: 17f4ab36038cdf7d568bd17dcf8ebc2110c9dcb9
+    - InlineComments
+        commit: 1e1015bfc8d7737265a9e348f8289a7292c5d1fc
+    - Maps
+        commit: 958b64d521732cc5ad3530cc94a09884d51bcefc
+        repository: https://github.com/ProfessionalWiki/Maps
+    - Mermaid
+        commit: fd792683fef3c84a7cdd56f8f474c4da0dd630f2
+        repository: https://github.com/SemanticMediaWiki/Mermaid
+    - OAuth
+        commit: 0d466bcb3c0146dedc44ac8dce2fea7f0d749f31
+    - QuickInstantCommons
+        commit: 3330ce1efd4a8143ee2525ad9f48654dd84c826c
+    - RSS
+        commit: d73982e27872a74e2fb6ba40189c96e4beada1c4
+    - RandomSelection
+        commit: d585acaeb6e35d1fc15e4d71e2271fb4c7f412a4
+    - RegexFunctions
+        commit: 444c7ad5a019d0f0ba4d8e9c3b2178588571624d
+    - RelatedArticles
+        commit: f5de0bc44637825149ea940d755f7b419f62be32
+    - SemanticCompoundQueries
+        commit: 37872efe470a01294da9afeb4b109173665169f5
+        repository: https://github.com/SemanticMediaWiki/SemanticCompoundQueries
+    - SemanticDrilldown
+        commit: 3f74e3f15cd53bcb2dc0027099e4a2edd7158f02
+        repository: https://github.com/SemanticMediaWiki/SemanticDrilldown
+    - SemanticExtraSpecialProperties
+        commit: f7616bdb48210e75903392a784e91d955caa76a5
+        repository: https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties
+    - SemanticMediaWiki
+        commit: 16171910b16165089d19fc6f66c414e6f62aa1eb
+        repository: https://github.com/SemanticMediaWiki/SemanticMediaWiki
+    - SemanticResultFormats
+        commit: 36bed50f3df91e92fd0823245547a1525a3f3d0d
+        repository: https://github.com/SemanticMediaWiki/SemanticResultFormats
+    - SemanticScribunto
+        commit: 9bf8857c4c199acd589f836b4b7c454e708d99ee
+        repository: https://github.com/SemanticMediaWiki/SemanticScribunto
+    - SemanticWatchlist
+        commit: 67b2df20249f4c02103e6b8ecbd65ecc49780eb3
+        repository: https://github.com/SemanticMediaWiki/SemanticWatchlist
+    - SimpleBatchUpload
+        commit: 1e53b5b50e7fbc6c96c749bfdf3b807f62836c30
+        repository: https://github.com/ProfessionalWiki/SimpleBatchUpload
+    - SocialProfile
+        commit: 596821355ef2022171718f41a1109da01c6e3dbc
+    - SubPageList
+        commit: c016dcdb7866f20319731e6497b48fd43756505e
+        repository: https://github.com/ProfessionalWiki/SubPageList
+    - TemplateSandbox
+        commit: db217336a3e2c455c5e24303b2e793623b80a055
+    - TemplateStylesExtender
+        commit: 97a375a037d3cd5a5ead000290883925183f9bb3
+        repository: https://github.com/octfx/mediawiki-extensions-TemplateStylesExtender
+    - TimedMediaHandler
+        commit: b223fe9d63409696b54511777b1e3619b1a7673b
+    - TwoColConflict
+        commit: 377a8f2fd7b87a89354dc08e373d4e2b6d476211
+    - WhosOnline
+        commit: e072d08f58ea013a40f27dd95ef1eef8bca364c2
+    - cldr
+        commit: cf6c9c70150cec6c1193f6f50dc54b72dc6e0f40
+  Extensions with different configurations:
+    ~ AWS:
+        Taqasta commit: 97c210475f82ed5bc86ea3cbf2726162ccbedbfe
+        Canasta commit: f85bb579b57f22175ff0cbca7664ad26cacdbb58
+    ~ AdminLinks:
+        Taqasta commit: 60eda7201636218b80d83a637b70e5c753900e41
+        Canasta commit: 92f1e05e2458368ad7a8477b2d84acfc99c36026
+    ~ AdvancedSearch:
+        Taqasta commit: fc7079d49fba845d786d97e4980c8d8fb522bd71
+        Canasta commit: d879c5105bbdc574d6c7e95fa4cd20d7b6de6dcd
+    ~ AntiSpoof:
+        Taqasta commit: 29d219c52f412d84182f979a202405664b9424e6
+        Canasta commit: a010c2d53618aa99b8b8a32d9665de9000e53188
+    ~ BetaFeatures:
+        Taqasta commit: e2dc57ca67ca7d4188f3b921d5883ee532754724
+        Canasta commit: b6d1cdf01dea38eabc69f55ae1d1ccb851080750
+    ~ Cargo:
+        Taqasta commit: a2865938165c1389d852df762f8c85073859e5dd
+        Canasta commit: 01ac0984c8db0c4acf4e9003063d9e44d7d022a1
+    ~ CheckUser:
+        Taqasta commit: 53f7c98d3fd003aef8faf95dd08ee05139079fab
+        Canasta commit: 1de925985d764b50f80c08bd473a23312435bdae
+    ~ CirrusSearch:
+        Taqasta commit: 209efea8657680d855eb5495550af26ee60cea82
+        Canasta commit: 3461fc8daae0f1d8e555d1d1da21d6a76d836b3b
+    ~ CodeMirror:
+        Taqasta commit: 5b6096aaed463519b8f99aa79fadb4498b474905
+        Canasta commit: da01975ea050fe20ea80ff6728bbe0a7a2090c78
+    ~ Collection:
+        Taqasta commit: None
+        Canasta commit: f5f15ade19be8d5f07518d335be9a7047b6b7437
+        Removed: gerrit_ref
+    ~ CommentStreams:
+        Taqasta commit: 25340d9d06a7547ba31d9dc4ef0ac100a48f70ed
+        Canasta commit: 23e8579bcbd4e7263836f2105d15fa7ef431f98e
+    ~ ConfirmAccount:
+        Taqasta commit: de9733a4bd8a3b26a2aed6b56eab56197026d116
+        Canasta commit: dc1a1db096f4ecadfe178fccd26a1b7a854254ad
+    ~ ContactPage:
+        Taqasta commit: ad2cdd6a5bb1676dd42215f7585125a78140b121
+        Canasta commit: 733c519feeafdf296b288500f317512262ffecb7
+    ~ DataTransfer:
+        Taqasta commit: 2693332aeb146681e54bb1131a3330235f14f742
+        Canasta commit: 8ffc202389decbe6c0fe2f974ecf7e7283db7a97
+    ~ EditAccount:
+        Taqasta commit: e59561c56836a98bc5f5f3068bc81fd67a5d1c41
+        Canasta commit: 19ef898ce9cecc34dfed190d2d8628bbeb863f89
+        Added: Wikidata ID
+    ~ Editcount:
+        Taqasta commit: a81f6e9e404da0e82801fc12d91567d1cc143181
+        Canasta commit: 84a4c08a26605ab8c89beb77d6f7bd6fc3e97ec6
+    ~ EmailAuthorization:
+        Taqasta commit: d14a4bb04e2004bb13023dd8a044fc530d558bb8
+        Canasta commit: 69ca5f8dfa9217c542bfd34ee9736dc8e04d0903
+    ~ EmbedVideo:
+        Taqasta commit: 3d8124738d3f1696b42b6eba1d11e9aeae660551
+        Canasta commit: 8c7c8994b1ac2466339e53674df9140c4de76c67
+        Taqasta branch: master
+        Canasta branch: REL1_43
+    ~ EventStreamConfig:
+        Taqasta commit: 38de67f43c8a1fb26115226fe17caf428b7ce381
+        Canasta commit: 0989b79f4663360f5b1173441e1fc562b3c63b62
+    ~ ExternalData:
+        Taqasta commit: 564932ba8606390f339291a626b67340af536c68
+        Canasta commit: bee4371617089195e3885a3deef16c8fcb8de4fb
+    ~ FlexDiagrams:
+        Taqasta commit: 7e108c024e892b5dbecdada5dba7d62a93450d23
+        Canasta commit: 183efb105deda9d228041b976cd36c50d3c63628
+    ~ GTag:
+        Taqasta commit: 570ceccdb7d6612ba37de0885c98a0b7fa95d341
+        Canasta commit: 90d87ea56777b2be3ab5f718b0b6644623a24d04
+        Taqasta branch: master
+        Canasta branch: REL1_43
+        Added: Wikidata ID
+    ~ HTMLTags:
+        Taqasta commit: 3dc5caa3d586756f39abfef49053136267eb68ef
+        Canasta commit: 3903111e4c1075e0f24695d8ee57aecf8d5cb4a8
+        Taqasta branch: REL1_43
+        Canasta branch: master
+    ~ HeaderTabs:
+        Taqasta commit: 2fa424dd8adfb31a27613715ef523b918675ea42
+        Canasta commit: bcb060829c5d643e746921641ea5dbd5a84f35f4
+        Taqasta branch: master
+        Canasta branch: REL1_43
+    ~ JWTAuth:
+        Taqasta commit: c7c0730160a84d6b60e3e1b6b108d790972f0f15
+        Canasta commit: 1649b7a2baeaf996caf2de463d6004807e26748d
+        Taqasta repo: https://github.com/jeffw16/JWTAuth.git
+        Canasta repo: wikimedia
+        Taqasta branch: main
+        Canasta branch: master
+        Only in Taqasta: ['composer update']
+        Added: Wikidata ID
+    ~ LabeledSectionTransclusion:
+        Taqasta commit: e7e5c6caf8faed52c8bdec9ee363511666405b20
+        Canasta commit: 68ef6ea74b39e37278eadd5ab9a1ac62bd85de82
+    ~ Lingo:
+        Taqasta commit: f87ea047c6665c4c8d7435d23a3b454d127447a0
+        Canasta commit: 27893843b7529951deed9a3ef9fc25c778934eea
+        Taqasta branch: master
+        Canasta branch: REL1_43
+    ~ MassMessage:
+        Taqasta commit: 27ad797faa94d0d43294609eb00b836d7ab2a08e
+        Canasta commit: 798cbd5d4e1099aeba97c2c7e1b05fdb01882292
+    ~ MassMessageEmail:
+        Only in Canasta: ['composer update']
+    ~ MediaUploader:
+        Taqasta commit: 77d2936cb635478c667d216fec3dcf8e0880e0c7
+        Canasta commit: b0f6d0f231891daee3da7fa39045640fa50fa4d2
+    ~ MintyDocs:
+        Taqasta commit: 760e10ddf4b1dd70caae76286e6afd6342f8f67b
+        Canasta commit: 8300e744a12476e42f34e4571b0d6613dc9929c7
+    ~ MobileFrontend:
+        Taqasta commit: a44f2808aa9e051f6a56215ce1320018db723808
+        Canasta commit: 52aa1f0d683d72935fc737b0e7bb0ea906289701
+    ~ NewUserMessage:
+        Taqasta commit: 28641bc5780fa8023106b33f8647fc7bd954eb19
+        Canasta commit: cdc2bc20557ca97387a0be7713fcc550efd9edfe
+    ~ OpenIDConnect:
+        Taqasta commit: f68146b341213ded4552540eb29ede133c6ff0b5
+        Canasta commit: 5d9cdd7690ccbb3cac552fb85ff4a8742ee8b145
+    ~ PageExchange:
+        Taqasta commit: afda8c1ebe6e870841df47f9abeba5ac590594d7
+        Canasta commit: eaca8502623f3d80354cbe56571840b215f5ab67
+        Taqasta branch: REL1_43
+        Canasta branch: master
+    ~ PageForms:
+        Taqasta commit: ffcfb416a4f18e17df5ff02eed6004c6933c0d8f
+        Canasta commit: 8324bdaef560ee38e64a67a404082d3893c36ead
+    ~ PageSchemas:
+        Taqasta commit: 25a55c1aa9c6600e9fd9b03f5d50ccad2a9e83fe
+        Canasta commit: 9fe81a9904fa51adcd50c85c3ddb214ae63ce9dc
+        Taqasta branch: REL1_43
+        Canasta branch: master
+        Added: Wikidata ID
+    ~ Popups:
+        Taqasta commit: 3567c401b261076c68cb4872ec32a8eac47ff681
+        Canasta commit: 7d5a9c8a62e9f0152c6c73b6d286c65bb526a291
+    ~ RevisionSlider:
+        Taqasta commit: b10b2150133e77099a37b089003170c0111eb681
+        Canasta commit: ae8986e4e67a17a8def5168645ee9afa6e6890df
+    ~ RottenLinks:
+        Taqasta commit: cb1d7376e7f900606b8f998e01280adf645d97c6
+        Canasta commit: a2019146ef7fad359ac0503bb885f651d90272cb
+        Taqasta branch: main
+        Canasta branch: REL1_43
+    ~ SemanticDependencyUpdater:
+        Taqasta commit: 8f927a9b0f1eb49359d30a76099fa1252905f64d
+        Canasta commit: 28a86f1f7267c86f7fb8200f31ec6d690745a669
+        Taqasta repo: https://github.com/WikiTeq/SemanticDependencyUpdater.git
+        Canasta repo: https://github.com/gesinn-it/SemanticDependencyUpdater
+        Taqasta branch: old-master
+        Canasta branch: REL1_43
+    ~ SimpleChanges:
+        Taqasta commit: None
+        Canasta commit: 024aca4c80d2a6b697f3d85e99de8e198b126999
+        Removed: gerrit_ref
+    ~ SimpleMathJax:
+        Taqasta commit: fab35e6ac66e1f5abd3c91a57719f8180dd346ef
+        Canasta commit: 7c9de84d219d15243aa153867339ac1a9c1a22e5
+        Taqasta branch: main
+        Canasta branch: REL1_43
+    ~ TemplateStyles:
+        Only in Canasta: ['composer update']
+    ~ TemplateWizard:
+        Taqasta commit: 4c3057f1bf55f686f044dce40b9e70e14ea8d8ec
+        Canasta commit: f30e613579b90ff1b166ca08903037415f45471e
+    ~ TitleIcon:
+        Taqasta commit: 892afc0abab4c76e2db13afab11dd82a8e09e8c8
+        Canasta commit: 6e0b6a3ddba40c468d904d8587945092ad3f8030
+    ~ UniversalLanguageSelector:
+        Taqasta commit: d74ff7c4b98d72dda6bfccc597d496ef93953bfb
+        Canasta commit: 11c95712a05fd8feee7d148c5a2b882b92984bba
+    ~ UploadWizard:
+        Taqasta commit: 16b2d111e4f5a1f30249d78965c536a592305caf
+        Canasta commit: 0dd1f57172e82c18d7e8580c42eebe27c23e688a
+    ~ UserMerge:
+        Taqasta commit: 658fd7ac017cee7cd1ccd68a7431ffad31cf056c
+        Canasta commit: f9d2664fd1af70a2b3a22a55b971c174593d38f1
+    ~ UserPageViewTracker:
+        Taqasta commit: f375afc09cf381d662c75d405aa373cf6cb658cd
+        Canasta commit: a3009ef62873535de56e18f62d629ca3494e9d77
+        Taqasta branch: master
+        Canasta branch: REL1_43
+    ~ VariablesLua:
+        Taqasta branch: master
+        Canasta branch: REL1_43
+    ~ WatchAnalytics:
+        Taqasta commit: da4ab0f2455ef9ad2d1593143f638988f9aa1dec
+        Canasta commit: 0006628d32a15614968dc80e2edb40322ea33c76
+    ~ Widgets:
+        Added: persistent directories
+    ~ WikiSEO:
+        Taqasta commit: 5d27adb6ec53e7b1076a485e93f0b0c272d08937
+        Canasta commit: 86611359bfc639beb1b567d7df0edf25a0441aa0
+
+SKINS:
+  Skins only in Taqasta:
+    + pivot
+  Skins only in Canasta:
+    - Pivot
+    - chameleon
+  Skins with different configurations:
+    ~ CologneBlue:
+        Taqasta commit: d7c8d45093c82460fe80c98ce9fa775315fd3e30
+        Canasta commit: 9134d2e26c9d1c8f9f4a942cbeeff3e26ed11f21
+
+COMPOSER PACKAGES:
+  Composer packages only in Taqasta:
+    + mediawiki/bootstrap-components @ 5.2.1
+    + mediawiki/chameleon-skin @ 5.0.0
+    + mediawiki/maps @ 11.0.1
+    + mediawiki/mermaid @ 3.1.0
+    + mediawiki/remote-wiki @ dev-master#da859c2c5081d96a6492f178686251136d35ec23
+    + mediawiki/semantic-compound-queries @ dev-master#6853f0758c3ba64415573bbc29507397ea1248ca
+    + mediawiki/semantic-extra-special-properties @ 4.0.0
+    + mediawiki/semantic-media-wiki @ 5.0.2
+    + mediawiki/semantic-result-formats @ dev-master#02c08ce0098a185277c817e950c8074695f6cd45
+    + mediawiki/semantic-scribunto @ dev-master#c83e55dcb56b9608fccf845b6441772086be84bf
+    + mediawiki/semantic-watchlist @ dev-master#8080e3e8d6f4689beeca6ab57ed9255502e175b2
+    + mediawiki/simple-batch-upload @ 2.0.1
+    + mediawiki/sub-page-list @ 2.0.2
+  Extensions requiring composer update only in Canasta:
+    - bootstrap
+    - maps
+    - massmessageemail
+    - semanticmediawiki
+    - semanticresultformats
+    - timedmediahandler
+
+REPOSITORIES:
+  Custom repositories only in Taqasta:
+    + https://github.com/WikiTeq/mediawiki-api-base.git
+    + https://github.com/WikiTeq/mediawiki-extension-RemoteWiki
+  Custom repositories only in Canasta:
+    - https://github.com/Liquipedia/VariablesLua
+    - https://github.com/ProfessionalWiki/Bootstrap
+    - https://github.com/ProfessionalWiki/Maps
+    - https://github.com/ProfessionalWiki/SimpleBatchUpload
+    - https://github.com/ProfessionalWiki/SubPageList
+    - https://github.com/ProfessionalWiki/chameleon
+    - https://github.com/SemanticMediaWiki/Mermaid
+    - https://github.com/SemanticMediaWiki/SemanticCompoundQueries
+    - https://github.com/SemanticMediaWiki/SemanticDrilldown
+    - https://github.com/SemanticMediaWiki/SemanticExtraSpecialProperties
+    - https://github.com/SemanticMediaWiki/SemanticMediaWiki
+    - https://github.com/SemanticMediaWiki/SemanticResultFormats
+    - https://github.com/SemanticMediaWiki/SemanticScribunto
+    - https://github.com/SemanticMediaWiki/SemanticWatchlist
+    - https://github.com/SkizNet/mediawiki-GTag
+    - https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo
+    - https://github.com/edwardspec/mediawiki-aws-s3
+    - https://github.com/gesinn-it/SemanticDependencyUpdater
+    - https://github.com/jmnote/SimpleMathJax
+    - https://github.com/miraheze/RottenLinks
+    - https://github.com/octfx/mediawiki-extensions-TemplateStylesExtender
+    - https://github.com/oetterer/BootstrapComponents

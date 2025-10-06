@@ -143,7 +143,7 @@ class YamlComparer:
             output.append(skin_diff)
 
         # Compare packages
-        pkg_diff = self._compare_packages(taqasta_yaml.get("packages", []), canasta_yaml.get("extensions", []))
+        pkg_diff = self._compare_packages(taqasta_yaml.get("packages", []), taqasta_yaml.get("extensions", []), canasta_yaml.get("extensions", []))
         if pkg_diff:
             output.append("\nCOMPOSER PACKAGES:")
             output.append(pkg_diff)
@@ -188,9 +188,10 @@ class YamlComparer:
         # Helper function to show unique items
         def _show_unique_items(only_items: set, prefix: str, source_dict: Dict[str, Any]) -> None:
             """Show items that are unique to one source."""
-            if only_items:
+            excluding_bundled = [i for i in only_items if not "bundled" in source_dict[i]]
+            if excluding_bundled:
                 output.append(f"  {item_type} only in {prefix}:")
-                for item in sorted(only_items):
+                for item in sorted(excluding_bundled):
                     output.append(f"    {'+' if prefix == 'Taqasta' else '-'} {item}")
                     if show_details_for_unique:
                         # Show key details
@@ -206,6 +207,33 @@ class YamlComparer:
         # Items only in Canasta
         _show_unique_items(canasta_names - taqasta_names, "Canasta", canasta_item_dict)
 
+        def _filter_extra_steps(steps: List[str]) -> List[str]:
+            IGNORED_STEPS = [
+                # Taqasta does not track database updates
+                'database update',
+                # Taqasta loads submodules for all extensions
+                'git submodule update',
+            ]
+            return list(set(steps) - set(IGNORED_STEPS))
+
+        def _skip_in_detailed_diff(clean_path: str) -> bool:
+            '''
+            Some entries (like commit) are always reported separately and should
+            be ignored when showing details
+            '''
+            if clean_path == "commit":
+                return True  # Commit differences are shown separately
+            if compare_repos_and_branches:
+                # The other fields are only shown separately when
+                # compare_repos_and_branches is true
+                SHOULD_SKIP = [
+                    'repository',
+                    'branch',
+                    'additional steps',
+                ]
+                return clean_path in SHOULD_SKIP
+            return False
+
         # Items in both - compare details
         common = taqasta_names & canasta_names
         if common:
@@ -213,6 +241,22 @@ class YamlComparer:
             for item in sorted(common):
                 taqasta_data = taqasta_item_dict[item]
                 canasta_data = canasta_item_dict[item]
+
+                # Need to apply this filtering *before* the DeepDiff comparison
+                # to avoid false positives with the extension still having a
+                # meaningful difference but not showing anything
+                if "additional steps" in taqasta_data:
+                    taqasta_data["additional steps"] = _filter_extra_steps(taqasta_data["additional steps"])
+                else:
+                    taqasta_data["additional steps"] = []
+                if "additional steps" in canasta_data:
+                    canasta_data["additional steps"] = _filter_extra_steps(canasta_data["additional steps"])
+                else:
+                    canasta_data["additional steps"] = []
+
+                if 'required extensions' in canasta_data:
+                    # Taqasta doesn't track required extensions
+                    del canasta_data['required extensions']
 
                 diff = DeepDiff(taqasta_data, canasta_data, ignore_order=True)
                 if diff:
@@ -315,9 +359,9 @@ class YamlComparer:
                             only_taqasta_steps = taqasta_steps - canasta_steps
                             only_canasta_steps = canasta_steps - taqasta_steps
                             if only_taqasta_steps:
-                                output.append(f"        Only in Taqasta: {list(only_taqasta_steps)}")
+                                output.append(f"        Only in Taqasta: {sorted(list(only_taqasta_steps))}")
                             if only_canasta_steps:
-                                output.append(f"        Only in Canasta: {list(only_canasta_steps)}")
+                                output.append(f"        Only in Canasta: {sorted(list(only_canasta_steps))}")
 
                     # Show any other differences detected by DeepDiff
                     additional_differences = []
@@ -329,14 +373,8 @@ class YamlComparer:
                                 new_val = change.get("new_value", "None")
 
                                 # Skip fields that are already handled explicitly
-                                if clean_path == "commit":
-                                    continue  # Commit differences are shown separately
-                                if compare_repos_and_branches and clean_path == "repository":
-                                    continue  # Repository differences are shown separately
-                                if compare_repos_and_branches and clean_path == "branch":
-                                    continue  # Branch differences are shown separately
-                                if compare_repos_and_branches and clean_path.startswith("additional steps"):
-                                    continue  # Additional steps differences are shown separately
+                                if _skip_in_detailed_diff(clean_path):
+                                    continue
 
                                 additional_differences.append(f"        {clean_path}: '{old_val}' → '{new_val}'")
                         elif change_type == "type_changes":
@@ -351,14 +389,14 @@ class YamlComparer:
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
                                 # Skip additional steps as they're handled separately
-                                if compare_repos_and_branches and clean_path == "additional steps":
+                                if _skip_in_detailed_diff(clean_path):
                                     continue
                                 additional_differences.append(f"        Added: {clean_path}")
                         elif change_type == "dictionary_item_removed":
                             for path in changes:
                                 clean_path = self._clean_diff_path(path)
                                 # Skip additional steps as they're handled separately
-                                if compare_repos_and_branches and clean_path == "additional steps":
+                                if _skip_in_detailed_diff(clean_path):
                                     continue
                                 additional_differences.append(f"        Removed: {clean_path}")
                         elif change_type == "iterable_item_added":
@@ -402,7 +440,12 @@ class YamlComparer:
             taqasta_skins, canasta_skins, "Skins", show_details_for_unique=False, compare_repos_and_branches=False
         )
 
-    def _compare_packages(self, taqasta_packages: List[Dict[str, Any]], canasta_exts: List[Dict[str, Any]]) -> str:
+    def _compare_packages(
+        self,
+        taqasta_packages: List[Dict[str, Any]],
+        taqasta_exts: List[Dict[str, Any]],
+        canasta_exts: List[Dict[str, Any]]
+    ) -> str:
         """Compare composer packages between Taqasta and Canasta."""
         output = []
 
@@ -417,6 +460,11 @@ class YamlComparer:
         for pkg in taqasta_packages:
             if "name" in pkg:
                 taqasta_package_names.add(pkg["name"].lower())
+        # And also any extensions with composer updates
+        for ext_item in taqasta_exts:
+            for ext_name, ext_data in ext_item.items():
+                if ext_data.get("additional steps") and "composer update" in ext_data["additional steps"]:
+                    taqasta_package_names.add(ext_name.lower())
 
         # Packages only in Taqasta
         only_taqasta = taqasta_package_names - canasta_packages
