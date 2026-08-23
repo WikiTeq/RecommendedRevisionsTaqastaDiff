@@ -90,6 +90,17 @@ Examples:
         help="Directory to cache downloaded YAML files (default: ~/.cache/yaml_diff_tool)",
     )
 
+    parser.add_argument(
+        "--mw-version",
+        default=None,
+        metavar="VERSION",
+        help=(
+            "MediaWiki version to compare against (e.g. 1.39). values.yml does not "
+            "record the MediaWiki version, so without this flag the tool assumes %s "
+            "and fetches <version>.yaml from CanastaWiki/RecommendedRevisions" % YamlFetcher.DEFAULT_MW_VERSION
+        ),
+    )
+
     return parser
 
 
@@ -108,10 +119,10 @@ def main() -> int:
 
         # Fetch YAML files
         taqasta_yaml = fetcher.fetch_taqasta_values(taqasta_ref)
-        canasta_yaml = fetcher.fetch_canasta_revisions(canasta_ref, taqasta_yaml)
+        canasta_yaml = fetcher.fetch_canasta_revisions(canasta_ref, taqasta_yaml, mw_version=args.mw_version)
 
         # Detect MediaWiki version for display
-        mw_version = fetcher._detect_mediawiki_version(taqasta_yaml)
+        mw_version = args.mw_version or fetcher._detect_mediawiki_version(taqasta_yaml)
 
         # Compare and generate diff
         comparer = YamlComparer()

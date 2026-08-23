@@ -115,13 +115,20 @@ class YamlFetcher:
         # Default to default version if no version found
         return YamlFetcher.DEFAULT_MW_VERSION
 
-    def fetch_canasta_revisions(self, ref: str, taqasta_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def fetch_canasta_revisions(
+        self,
+        ref: str,
+        taqasta_data: Optional[Dict[str, Any]] = None,
+        mw_version: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """Fetch Canasta's recommended revisions YAML file for the appropriate MediaWiki version."""
-        # Determine the correct YAML file based on MediaWiki version
-        if taqasta_data:
-            mw_version = self._detect_mediawiki_version(taqasta_data)
-        else:
-            mw_version = self.DEFAULT_MW_VERSION  # Default fallback
+        # An explicit version takes precedence; values.yml carries no version
+        # key, so detection otherwise falls back to DEFAULT_MW_VERSION.
+        if mw_version is None:
+            if taqasta_data:
+                mw_version = self._detect_mediawiki_version(taqasta_data)
+            else:
+                mw_version = self.DEFAULT_MW_VERSION  # Default fallback
 
         yaml_file = f"{mw_version}.yaml"
 
