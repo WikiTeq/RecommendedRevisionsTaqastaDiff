@@ -1,6 +1,7 @@
 """Module for fetching YAML files from GitHub repositories."""
 
 import hashlib
+import time
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -17,9 +18,13 @@ class YamlFetcher:
     # Default MediaWiki version when none is detected
     DEFAULT_MW_VERSION = "1.43"
 
-    def __init__(self, cache_dir: Path):
+    # Default time-to-live for cached files (seconds)
+    DEFAULT_CACHE_TTL_SECONDS = 3600
+
+    def __init__(self, cache_dir: Path, cache_ttl_seconds: Optional[float] = None):
         """Initialize the fetcher with a cache directory."""
         self.cache_dir = cache_dir
+        self.cache_ttl_seconds = self.DEFAULT_CACHE_TTL_SECONDS if cache_ttl_seconds is None else cache_ttl_seconds
         try:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
         except (OSError, PermissionError) as e:
@@ -37,6 +42,14 @@ class YamlFetcher:
         cache_hash = hashlib.md5(cache_key.encode()).hexdigest()
         return self.cache_dir / f"{cache_hash}.yaml"
 
+    def _cache_is_fresh(self, cache_path: Path) -> bool:
+        """Check whether a cache file exists and is younger than the TTL."""
+        try:
+            age = time.time() - cache_path.stat().st_mtime
+        except OSError:
+            return False
+        return age < self.cache_ttl_seconds
+
     def _fetch_from_github(self, repo: str, ref: str, file_path: str) -> str:
         """Fetch a file from GitHub."""
         url = f"https://raw.githubusercontent.com/{repo}/{ref}/{file_path}"
@@ -53,8 +66,8 @@ class YamlFetcher:
         """Load from cache if available, otherwise fetch and cache."""
         cache_path = self._get_cache_path(repo, ref, file_path)
 
-        # Try to load from cache first
-        if cache_path.exists():
+        # Try to load from cache first, as long as it has not expired
+        if self._cache_is_fresh(cache_path):
             try:
                 with cache_path.open("r", encoding="utf-8") as f:
                     return yaml.safe_load(f)
