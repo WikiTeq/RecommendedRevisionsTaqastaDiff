@@ -90,6 +90,20 @@ Examples:
         help="Directory to cache downloaded YAML files (default: ~/.cache/yaml_diff_tool)",
     )
 
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Ignore cached YAML files and always fetch from GitHub",
+    )
+
+    parser.add_argument(
+        "--cache-ttl",
+        type=float,
+        default=None,
+        metavar="SECONDS",
+        help="Maximum age of cached YAML files in seconds (default: 3600)",
+    )
+
     return parser
 
 
@@ -100,7 +114,7 @@ def main() -> int:
 
     try:
         # Initialize fetcher with cache directory
-        fetcher = YamlFetcher(cache_dir=args.cache_dir)
+        fetcher = YamlFetcher(cache_dir=args.cache_dir, cache_ttl_seconds=0 if args.no_cache else args.cache_ttl)
 
         # Determine which refs to use (commit takes precedence over branch)
         taqasta_ref = resolve_git_reference(args.taqasta_commit, args.taqasta_branch, "master")

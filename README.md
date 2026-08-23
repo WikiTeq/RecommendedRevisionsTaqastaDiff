@@ -74,6 +74,8 @@ yaml-diff-tool --cache-dir /path/to/cache
 - `--canasta-commit COMMIT`: Specific commit hash of Canasta repository
 - `--output FILE`: Output file to save the diff (default: stdout)
 - `--cache-dir DIR`: Directory to cache downloaded YAML files (default: ~/.cache/yaml_diff_tool)
+- `--no-cache`: Ignore cached YAML files and always fetch from GitHub
+- `--cache-ttl SECONDS`: Maximum age of cached YAML files (default: 3600)
 - `--help`: Show help message
 
 ## Features
