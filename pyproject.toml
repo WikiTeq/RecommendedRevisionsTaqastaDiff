@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Compare Taqasta values.yml with Canasta recommended revisions"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "requests>=2.31.0",
     "pyyaml>=6.0",
