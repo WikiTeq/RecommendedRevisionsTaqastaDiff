@@ -74,6 +74,7 @@ yaml-diff-tool --cache-dir /path/to/cache
 - `--canasta-commit COMMIT`: Specific commit hash of Canasta repository
 - `--output FILE`: Output file to save the diff (default: stdout)
 - `--cache-dir DIR`: Directory to cache downloaded YAML files (default: ~/.cache/yaml_diff_tool)
+- `--mw-version VERSION`: MediaWiki version to compare against, e.g. `1.39` (values.yml does not record it; defaults to 1.43)
 - `--help`: Show help message
 
 ## Features

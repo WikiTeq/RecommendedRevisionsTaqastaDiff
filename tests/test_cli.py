@@ -114,7 +114,7 @@ class TestCli:
         assert result == 0
         mock_fetcher_class.assert_called_once()
         mock_fetcher.fetch_taqasta_values.assert_called_once_with("master")
-        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("main", {"extensions": []})
+        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("main", {"extensions": []}, mw_version=None)
         mock_comparer.compare.assert_called_once_with({"extensions": []}, {"extensions": []}, "master", "main", "1.43")
 
     @patch("src.cli.YamlFetcher")
@@ -199,7 +199,7 @@ class TestCli:
 
         assert result == 0
         mock_fetcher.fetch_taqasta_values.assert_called_once_with("abc123")
-        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("feature-branch", {"extensions": []})
+        mock_fetcher.fetch_canasta_revisions.assert_called_once_with("feature-branch", {"extensions": []}, mw_version=None)
 
     def test_main_module_execution(self):
         """Test that the module can be executed directly."""
