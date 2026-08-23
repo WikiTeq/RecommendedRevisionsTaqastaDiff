@@ -1,5 +1,7 @@
 """Module for comparing YAML structures and generating diff output."""
 
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional
 
 from deepdiff import DeepDiff
